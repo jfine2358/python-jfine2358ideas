@@ -38,6 +38,14 @@ class Base:
         if self.body:
             for child in self.body:
 
+                if isinstance(child, str):
+                    # GOTCHA: tree body and html body.
+                    if len(value):
+                        value[-1].tail = child
+                    else:
+                        value.text = child
+                    continue
+
                 if isinstance(child, meta):
                     child = child()
                 value.append(child.toxml())
@@ -97,6 +105,10 @@ class p:
 class div:
     pass
 
+@wibble
+class b:
+    pass
+
 
 pear_div = div(class_='pear')
 
@@ -107,7 +119,12 @@ page = html[
             p,
             ],
         div(class_='wobble')[
-            p,
+            p['hello world',],
+            p[
+                'said',
+                b['Peter',],
+                'quietly',
+                ],
             ],
         ],
     pear_div[p, p],
