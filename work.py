@@ -1,3 +1,9 @@
+class meta(type):
+
+    def __getitem__(self, body):
+        return self()[body]
+
+
 class Base:
 
     def __init__(self, *argv, **kwargs):
@@ -13,20 +19,14 @@ class Base:
             raise ValueError
 
         self.body = body
-
         return self
-
-
 
 
 def wibble(cls):
 
     d = dict(cls.__dict__)
     name = cls.__name__
-
-
-    new_cls = type(name, (Base,), {})
-
+    new_cls = meta(name, (Base,), {})
     return new_cls
 
 
@@ -41,3 +41,13 @@ x = apple(x=4, b=5)[
 print(x.argv)
 print(x.kwargs)
 print(x.body)
+
+
+y = apple[
+    'fgh',
+    'ijk',
+]
+
+print(y.argv)
+print(y.kwargs)
+print(y.body)
