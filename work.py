@@ -1,8 +1,10 @@
+import lxml.etree
+__metaclass__ = type
+
 class meta(type):
 
     def __getitem__(self, body):
         return self()[body]
-
 
 class Base:
 
@@ -22,10 +24,25 @@ class Base:
     def __getitem__(self, body):
 
         if not isinstance(body, tuple):
-            raise ValueError
+            raise ValueError('Expecting tuple, missing comma perhaps')
 
         self.body = body
         return self
+
+    def toxml(self):
+
+        name = self.__class__.__name__
+        kwargs = self.kwargs
+        value = lxml.etree.Element(name, **kwargs)
+
+        if self.body:
+            for child in self.body:
+
+                if isinstance(child, meta):
+                    child = child()
+                value.append(child.toxml())
+
+        return value
 
 
 def wibble(cls):
@@ -46,7 +63,7 @@ class apple:
 
 x = apple(3, 4, x=5)[
     'abc',
-]
+lxml]
 
 print(x.argv)
 print(x.kwargs)
@@ -61,3 +78,40 @@ y = apple[
 print(y.argv)
 print(y.kwargs)
 print(y.body)
+
+
+@wibble
+class html:
+    pass
+
+
+@wibble
+class body:
+    pass
+
+@wibble
+class p:
+    pass
+
+@wibble
+class div:
+    pass
+
+
+pear_div = div(class_='pear')
+
+page = html[
+    body[
+        div(class_='cherry')[
+            p(id='ab5'),
+            p,
+            ],
+        div(class_='wobble')[
+            p,
+            ],
+        ],
+    pear_div[p, p],
+    pear_div[p, p],
+]
+
+print(lxml.etree.tostring(page.toxml(), pretty_print=True))
