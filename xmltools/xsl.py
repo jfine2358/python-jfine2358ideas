@@ -54,10 +54,16 @@ class NoArgs:
         return argv, kwargs
 
 
+# Keep the element classes in alphabetical order.
 @elementclass
 class choose(XslBase, NoArgs):
     '''choose[ when +, otherwise ?]
     '''
+
+@elementclass
+class otherwise(XslBase, NoArgs):
+    pass
+
 
 @elementclass
 class when(XslBase):
@@ -66,12 +72,6 @@ class when(XslBase):
     @staticmethod
     def make_args(test):
         return (), dict(test=test)
-
-
-@elementclass
-class otherwise(XslBase, NoArgs):
-    pass
-
 
 
 if __name__ == '__main__':
