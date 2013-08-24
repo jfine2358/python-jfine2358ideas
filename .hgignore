@@ -1,0 +1,8 @@
+syntax: glob
+*~                              # Emacs backup files.
+*.orig                          # Created by hg.
+*.pyc                           # Created by Python.
+
+
+syntax: re
+^local/                         # Local working files.
