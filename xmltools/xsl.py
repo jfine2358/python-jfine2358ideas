@@ -9,6 +9,21 @@
 >>> doit(choose)
 <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/>
 
+Here's a populated choose element.
+>>> elt = choose[
+...     when('condition1'),
+...     when('condition2'),
+...     otherwise,
+... ]
+
+>>> doit(elt)
+<xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:when test="condition1"/>
+  <xsl:when test="condition2"/>
+  <xsl:otherwise/>
+</xsl:choose>
+
+It's an error to give choose an argument.
 >>> choose(a=1)
 Traceback (most recent call last):
 ValueError: xsl.choose has no parameters
@@ -42,6 +57,19 @@ class choose(XslBase):
         if argv or kwargs:
             raise ValueError('xsl.choose has no parameters')
         return argv, kwargs
+
+@elementclass
+class when(XslBase):
+
+    # TODO: have elementclass promote make_args to staticmethod?
+    @staticmethod
+    def make_args(test):
+        return (), dict(test=test)
+
+
+@elementclass
+class otherwise(XslBase):
+    pass
 
 
 
