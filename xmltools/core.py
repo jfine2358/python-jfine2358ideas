@@ -10,10 +10,25 @@ The four partial and full instantiations of a tag.
 >>> t2 = aaa(a=1, b=2)
 >>> t3 = aaa(a=1, b=2)['abc',]
 
+You cannot reassign the body.
 >>> t1['def',]
 Traceback (most recent call last):
 AttributeError: element already has body
+
+Tags can be converted to xml.
+>>> def doit(t): return lxml.etree.tostring(t.xml)
+
+>>> doit(t0)
+'<aaa/>'
+>>> doit(t1)
+'<aaa>abc</aaa>'
+>>> doit(t2)
+'<aaa a="1" b="2"/>'
+>>> doit(t3)
+'<aaa a="1" b="2">abc</aaa>'
 '''
+
+import lxml.etree
 
 __metaclass__ = type
 
@@ -34,6 +49,11 @@ class tagclass(type):
         '''Returns self()[body], to permit tag[...].
         '''
         return self()[body]
+
+
+    @property
+    def xml(self):
+        return self().xml
 
 
 class TagBase:
@@ -63,6 +83,40 @@ class TagBase:
 
         self.body = body
         return self
+
+
+    @property
+    def xml(self):
+
+        # TODO: More tests.
+        # TODO: Custom mapping of args.
+        name = self.__class__.__name__
+        kwargs = self.kwargs
+        value = lxml.etree.Element(name)
+        value.attrib.update(
+            (key, unicode(value))
+            for key, value in kwargs.items()
+            )
+
+        if self.body:
+            for child in self.body:
+
+                # TODO: What if successive text nodes?
+                # TODO: Allow custom processing of special children
+                if isinstance(child, str):
+                    # TODO: Is len redundant?
+                    if len(value):
+                        value[-1].tail = child
+                    else:
+                        value.text = child
+                    continue
+
+                # TODO: Remove this wart.
+                if isinstance(child, tagtype):
+                    child = child()
+                value.append(child.xml)
+
+        return value
 
 
 if __name__ == '__main__':
