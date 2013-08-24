@@ -42,6 +42,13 @@ import lxml.etree
 __metaclass__ = type
 from .core import elementclass
 
+# Copied from testtools.py so can avoid import, make own version.
+def pp_elt(elt):
+
+    xml= elt.xml
+    s = lxml.etree.tostring(elt.xml, pretty_print=True)
+    print(s[:-1])               # Strip trailing '\n'.
+
 
 class XslBase:
 
@@ -98,7 +105,7 @@ class text(XslBase):
 
     @staticmethod
     def make_args(text):
-        return (), dict(text=text)
+        return (), locals()
 
     @property
     def xml(self):
@@ -106,6 +113,18 @@ class text(XslBase):
         elt = lxml.etree.Element(self.xml_tag)
         elt.text = self.args[1]['text']
         return elt
+
+@elementclass
+class param(XslBase):
+    '''
+    >>> pp_elt(param('width'))
+    <xsl:param xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="width"/>
+    >>> pp_elt(param('width', '*'))
+    <xsl:param xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="width" select="*"/>
+    '''
+    @staticmethod
+    def make_args(name, select=None):
+        return (), locals()
 
 
 @elementclass
