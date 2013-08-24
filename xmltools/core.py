@@ -9,6 +9,10 @@ The four partial and full instantiations of a tag.
 >>> t1 = aaa['abc',]
 >>> t2 = aaa(a=1, b=2)
 >>> t3 = aaa(a=1, b=2)['abc',]
+
+>>> t1['def',]
+Traceback (most recent call last):
+AttributeError: element already has body
 '''
 
 __metaclass__ = type
@@ -34,6 +38,9 @@ class tagclass(type):
 
 class TagBase:
 
+    argv = None                 # Set to a tuple by tag(...).
+    kwargs = None               # Set to a dict by tag(...).
+    body = None                 # Set to a tuple by tag(...)[...].
 
     def __init__(self, *argv, **kwargs):
 
@@ -45,6 +52,11 @@ class TagBase:
     def __getitem__(self, body):
         '''Return self, mutated by self.body = body.
         '''
+
+        # Forbid tag(...)[...][...].
+        if self.body is not None:
+            raise AttributeError('element already has body')
+
         # TOOD: Make this optional? Place in tag bases.
         if not isinstance(body, tuple):
             raise ValueError('Expecting tuple, missing comma perhaps')
