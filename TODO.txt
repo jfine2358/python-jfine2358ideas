@@ -1,2 +1,3 @@
 # Have name_ as 'escaped' form of name.
 # Need something for names with '-' in them.
+# Use xsl__name for qname xsl:name.

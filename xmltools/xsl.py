@@ -65,6 +65,21 @@ class NoArgs:
 
 
 # Keep the element classes in alphabetical order.
+
+@elementclass
+class apply_templates(XslBase):
+    '''
+    >>> from .testtools import pp_elt
+
+    TODO This long output is ugly.  Suppress xmlns somehow?
+    >>> pp_elt(apply_templates(mode='abc'))
+    <xsl:apply_templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform" mode="abc" select="*"/>
+    '''
+    @staticmethod
+    def make_args(select='*', mode=None):
+        return (), locals()
+
+
 @elementclass
 class choose(XslBase, NoArgs):
     '''choose[ when +, otherwise ?]
@@ -97,7 +112,7 @@ class when(XslBase):
     # TODO: have elementclass promote make_args to staticmethod?
     @staticmethod
     def make_args(test):
-        return (), dict(test=test)
+        return (), locals()
 
 
 if __name__ == '__main__':
