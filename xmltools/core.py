@@ -1,32 +1,32 @@
 '''Core XML tools
 
 
->>> @tagclass
+>>> @elementclass
 ... class aaa: pass
->>> @tagclass
+>>> @elementclass
 ... class bbb: pass
 
-The four partial and full instantiations of a tag.
->>> t0 = aaa
->>> t1 = aaa['abc',]
->>> t2 = aaa(a=1, b=2)
->>> t3 = aaa(a=1, b=2)['abc',]
+The four partial and full instantiations of a element.
+>>> e0 = aaa
+>>> e1 = aaa['abc',]
+>>> e2 = aaa(a=1, b=2)
+>>> e3 = aaa(a=1, b=2)['abc',]
 
 You cannot reassign the body.
->>> t1['def',]
+>>> e1['def',]
 Traceback (most recent call last):
 AttributeError: element already has body
 
-Tags can be converted to xml.
+Elements can be converted to xml.
 >>> def doit(t): return lxml.etree.tostring(t.xml)
 
->>> doit(t0)
+>>> doit(e0)
 '<aaa/>'
->>> doit(t1)
+>>> doit(e1)
 '<aaa>abc</aaa>'
->>> doit(t2)
+>>> doit(e2)
 '<aaa a="1" b="2"/>'
->>> doit(t3)
+>>> doit(e3)
 '<aaa a="1" b="2">abc</aaa>'
 
 Here's a more complex example.
@@ -35,7 +35,7 @@ Here's a more complex example.
 
 Use make_args to give custom argument processing. Here's how to
 provide default values, and map positional to named arguments.
->>> @tagclass
+>>> @elementclass
 ... class ccc:
 ...     @staticmethod
 ...     def make_args(a=0, b=1, c=2):
@@ -59,11 +59,11 @@ TypeError: make_args() got an unexpected keyword argument 'd'
 
 Use make_attrib to give custom conversion of the args into an
 attributes dictionary.  Here's how to replace underscored by hyphens
-in XML attribute names.  Each set of tags might have its own
-conversion, which could be given using a lookup table.  The mapping
-could also add namespaces.
+in XML attribute names.  Each set of element classes might have its
+own conversion, which could be given using a lookup table.  The
+mapping could also add namespaces.
 
->>> @tagclass
+>>> @elementclass
 ... class ddd:
 ...     @staticmethod
 ...     def make_attrib(args):
@@ -87,12 +87,12 @@ def return_args(*argv, **kwargs):
     return argv, kwargs
 
 
-class tagclass(type):
+class elementclass(type):
 
     def __new__(type_, cls):
 
         name = cls.__name__
-        bases = (TagBase,)
+        bases = (ElementBase,)
         attrib = dict(cls.__dict__)
 
         new_cls = type.__new__(type_, name, bases, attrib)
@@ -100,7 +100,7 @@ class tagclass(type):
 
 
     def __getitem__(self, body):
-        '''Returns self()[body], to permit tag[...].
+        '''Returns self()[body], to permit elt[...].
         '''
         return self()[body]
 
@@ -110,10 +110,10 @@ class tagclass(type):
         return self().xml
 
 
-class TagBase:
+class ElementBase:
 
-    args = None                 # Set to (tuple, dict) by tag(...).
-    body = None                 # Set to a tuple by tag(...)[...].
+    args = None                 # Set to (tuple, dict) by elt(...).
+    body = None                 # Set to a tuple by elt(...)[...].
 
     make_args = return_args  # Subclass can override.
 
@@ -127,11 +127,11 @@ class TagBase:
     def __getitem__(self, body):
         '''Return self, mutated by self.body = body.'''
 
-        # Forbid tag(...)[...][...].
+        # Forbid elt(...)[...][...].
         if self.body is not None:
             raise AttributeError('element already has body')
 
-        # TOOD: Make this optional? Place in tag bases.
+        # TOOD: Make this optional? Place in element class bases.
         if not isinstance(body, tuple):
             raise ValueError('Expecting tuple, missing comma perhaps')
 
