@@ -18,7 +18,8 @@ Traceback (most recent call last):
 AttributeError: element already has body
 
 Elements can be converted to xml.
->>> def doit(t): return lxml.etree.tostring(t.xml)
+>>> def doit(t, pp=False):
+...     return lxml.etree.tostring(t.xml, pretty_print=pp)
 
 >>> doit(e0)
 '<aaa/>'
@@ -32,6 +33,21 @@ Elements can be converted to xml.
 Here's a more complex example.
 >>> doit(aaa['rst', bbb, 'uvw', bbb[aaa,]])
 '<aaa>rst<bbb/>uvw<bbb><aaa/></bbb></aaa>'
+
+Use xml_tag to override the default value.
+>>> @elementclass
+... class template:
+...    xml_tag = '{http://www.w3.org/1999/XSL/Transform}template'
+
+>>> @elementclass
+... class html:
+...    pass
+
+TODO: Clean up the test code.
+>>> print(doit(template(match='poem')[html,], pp=True)[:-1])
+<xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" match="poem">
+  <html/>
+</xsl:template>
 
 Use make_args to give custom argument processing. Here's how to
 provide default values, and map positional to named arguments.
@@ -148,14 +164,19 @@ class ElementBase:
             )
 
 
+    # TODO: Can I define this as a classproperty?
+    @property
+    def xml_tag(self):
+        '''Return class name, for use as the xml_tag.'''
+        return self.__class__.__name__
+
+
     @property
     def xml(self):
 
         # TODO: More tests.
-        # TODO: Custom mapping of args.
-        name = self.__class__.__name__
-        value = lxml.etree.Element(name)
-        value.attrib.update(self.make_attrib(self.args))
+        elt = lxml.etree.Element(self.xml_tag)
+        elt.attrib.update(self.make_attrib(self.args))
 
         if self.body:
             for child in self.body:
@@ -164,15 +185,15 @@ class ElementBase:
                 # TODO: Allow custom processing of special children
                 if isinstance(child, str):
                     # TODO: Is len redundant?
-                    if len(value):
-                        value[-1].tail = child
+                    if len(elt):
+                        elt[-1].tail = child
                     else:
-                        value.text = child
+                        elt.text = child
                     continue
 
-                value.append(child.xml)
+                elt.append(child.xml)
 
-        return value
+        return elt
 
 
 if __name__ == '__main__':
