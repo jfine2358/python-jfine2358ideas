@@ -108,7 +108,13 @@ class elementclass(type):
     def __new__(type_, cls):
 
         name = cls.__name__
-        bases = (ElementBase,)
+        # This is a hack to avoid:
+        # TypeError: Cannot create a consistent method resolution
+        # order (MRO) for bases object, ElementBase
+        bases = tuple(
+            c for c in cls.__bases__
+            if c is not object
+            ) + (ElementBase,)
         attrib = dict(cls.__dict__)
 
         new_cls = type.__new__(type_, name, bases, attrib)
