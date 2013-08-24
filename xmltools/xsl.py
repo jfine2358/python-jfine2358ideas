@@ -6,11 +6,11 @@
 ...     print(lxml.etree.tostring(elt.xml, pretty_print=True)[:-1])
 
 
->>> doit(text(' abc '))
-<xsl:text xmlns:xsl="http://www.w3.org/1999/XSL/Transform"> abc </xsl:text>
+>>> pp_elt(text(' abc '))
+<xsl:text> abc </xsl:text>
 
->>> doit(choose)
-<xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/>
+>>> pp_elt(choose)
+<xsl:choose/>
 
 Here's a populated choose element.
 >>> elt = choose[
@@ -19,8 +19,8 @@ Here's a populated choose element.
 ...     otherwise[text('default'),],
 ... ]
 
->>> doit(elt)
-<xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+>>> pp_elt(elt)
+<xsl:choose>
   <xsl:when test="condition1">
     <xsl:text>first</xsl:text>
   </xsl:when>
@@ -45,9 +45,18 @@ from .core import elementclass
 # Copied from testtools.py so can avoid import, make own version.
 def pp_elt(elt):
 
-    xml= elt.xml
-    s = lxml.etree.tostring(elt.xml, pretty_print=True)
-    print(s[:-1])               # Strip trailing '\n'.
+    # Start hack to suppress names spaces in output.
+    @elementclass
+    class wrap(XslBase):
+        pass
+
+    wrapper = wrap[elt,]
+    xml = wrapper.xml
+    s = lxml.etree.tostring(xml, pretty_print=True)
+
+    lines = s.split('\n')
+    s2 = '\n'.join(line[2:] for line in lines[1:-2])
+    print(s2)
 
 
 class XslBase:
@@ -78,11 +87,8 @@ class NoArgs:
 @elementclass
 class apply_templates(XslBase):
     '''
-    >>> from .testtools import pp_elt
-
-    TODO This long output is ugly.  Suppress xmlns somehow?
     >>> pp_elt(apply_templates(mode='abc'))
-    <xsl:apply-templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform" mode="abc" select="*"/>
+    <xsl:apply-templates mode="abc" select="*"/>
     '''
     @staticmethod
     def make_args(select='*', mode=None):
@@ -118,9 +124,9 @@ class text(XslBase):
 class param(XslBase):
     '''
     >>> pp_elt(param('width'))
-    <xsl:param xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="width"/>
+    <xsl:param name="width"/>
     >>> pp_elt(param('width', '*'))
-    <xsl:param xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="width" select="*"/>
+    <xsl:param name="width" select="*"/>
     '''
     @staticmethod
     def make_args(name, select=None):
