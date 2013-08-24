@@ -167,6 +167,8 @@ class ElementBase:
         return dict(
             (name, unicode(value))
             for name, value in args[1].items()
+            # TODO: Test suppress when value is None.
+            if value is not None
             )
 
 
