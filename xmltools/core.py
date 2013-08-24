@@ -32,11 +32,40 @@ Tags can be converted to xml.
 Here's a more complex example.
 >>> doit(aaa['rst', bbb, 'uvw', bbb[aaa,]])
 '<aaa>rst<bbb/>uvw<bbb><aaa/></bbb></aaa>'
+
+Use make_args to give custom argument processing. Here's how to
+provide default values, and map positional to named arguments.
+>>> @tagclass
+... class ccc:
+...     @staticmethod
+...     def make_args(a=0, b=1, c=2):
+...         return (), locals()
+
+>>> doit(ccc)
+'<ccc a="0" c="2" b="1"/>'
+
+>>> doit(ccc(5, b=7))
+'<ccc a="5" c="2" b="7"/>'
+
+This example also provides some error checking.
+>>> ccc(1, 2, 3, 4)
+Traceback (most recent call last):
+TypeError: make_args() takes at most 3 arguments (4 given)
+
+>>> ccc(d=5)
+Traceback (most recent call last):
+TypeError: make_args() got an unexpected keyword argument 'd'
 '''
 
 import lxml.etree
 
 __metaclass__ = type
+
+
+# TODO: Move to jfine.functools.
+def return_args(*argv, **kwargs):
+    '''Return pair (argv, kwargs).'''
+    return argv, kwargs
 
 
 class tagclass(type):
@@ -64,20 +93,20 @@ class tagclass(type):
 
 class TagBase:
 
-    argv = None                 # Set to a tuple by tag(...).
-    kwargs = None               # Set to a dict by tag(...).
+    args = None                 # Set to (tuple, dict) by tag(...).
     body = None                 # Set to a tuple by tag(...)[...].
 
-    def __init__(self, *argv, **kwargs):
+    make_args = return_args  # Subclass can override.
 
-        # TODO: Allow subclass to process args.
-        self.argv = argv
-        self.kwargs = kwargs
+
+    def __init__(self, *argv, **kwargs):
+        '''Read the source for init to see what it does.'''
+
+        self.args = self.make_args(*argv, **kwargs)
 
 
     def __getitem__(self, body):
-        '''Return self, mutated by self.body = body.
-        '''
+        '''Return self, mutated by self.body = body.'''
 
         # Forbid tag(...)[...][...].
         if self.body is not None:
@@ -97,7 +126,7 @@ class TagBase:
         # TODO: More tests.
         # TODO: Custom mapping of args.
         name = self.__class__.__name__
-        kwargs = self.kwargs
+        kwargs = self.args[1]
         value = lxml.etree.Element(name)
         value.attrib.update(
             (key, unicode(value))
