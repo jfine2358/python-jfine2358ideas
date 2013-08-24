@@ -3,6 +3,8 @@
 
 >>> @tagclass
 ... class aaa: pass
+>>> @tagclass
+... class bbb: pass
 
 The four partial and full instantiations of a tag.
 >>> t0 = aaa
@@ -26,6 +28,10 @@ Tags can be converted to xml.
 '<aaa a="1" b="2"/>'
 >>> doit(t3)
 '<aaa a="1" b="2">abc</aaa>'
+
+Here's a more complex example.
+>>> doit(aaa['rst', bbb, 'uvw', bbb[aaa,]])
+'<aaa>rst<bbb/>uvw<bbb><aaa/></bbb></aaa>'
 '''
 
 import lxml.etree
@@ -111,9 +117,6 @@ class TagBase:
                         value.text = child
                     continue
 
-                # TODO: Remove this wart.
-                if isinstance(child, tagtype):
-                    child = child()
                 value.append(child.xml)
 
         return value
