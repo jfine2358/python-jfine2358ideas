@@ -55,6 +55,25 @@ TypeError: make_args() takes at most 3 arguments (4 given)
 >>> ccc(d=5)
 Traceback (most recent call last):
 TypeError: make_args() got an unexpected keyword argument 'd'
+
+
+Use make_attrib to give custom conversion of the args into an
+attributes dictionary.  Here's how to replace underscored by hyphens
+in XML attribute names.  Each set of tags might have its own
+conversion, which could be given using a lookup table.  The mapping
+could also add namespaces.
+
+>>> @tagclass
+... class ddd:
+...     @staticmethod
+...     def make_attrib(args):
+...         return dict(
+...             (name.replace('_', '-'), value)
+...             for name, value in args[1].items()
+...          )
+
+>>> doit(ddd(keep_alive='true'))
+'<ddd keep-alive="true"/>'
 '''
 
 import lxml.etree
@@ -120,18 +139,23 @@ class TagBase:
         return self
 
 
+    @staticmethod
+    def make_attrib(args):
+
+        return dict(
+            (name, unicode(value))
+            for name, value in args[1].items()
+            )
+
+
     @property
     def xml(self):
 
         # TODO: More tests.
         # TODO: Custom mapping of args.
         name = self.__class__.__name__
-        kwargs = self.args[1]
         value = lxml.etree.Element(name)
-        value.attrib.update(
-            (key, unicode(value))
-            for key, value in kwargs.items()
-            )
+        value.attrib.update(self.make_attrib(self.args))
 
         if self.body:
             for child in self.body:
