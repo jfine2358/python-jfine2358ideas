@@ -26,8 +26,7 @@ Here's a populated choose element.
 It's an error to give choose an argument.
 >>> choose(a=1)
 Traceback (most recent call last):
-ValueError: xsl.choose has no parameters
-
+ValueError: this element class has no parameters
 '''
 
 __metaclass__ = type
@@ -45,18 +44,20 @@ class XslBase:
         name = self.__class__.__name__
         return '{{{0}}}{1}'.format(ns, name)
 
-
-@elementclass
-class choose(XslBase):
-    '''choose[ when +, otherwise ?]
-    '''
+class NoArgs:
 
     @staticmethod
     def make_args(*argv, **kwargs):
 
         if argv or kwargs:
-            raise ValueError('xsl.choose has no parameters')
+            raise ValueError('this element class has no parameters')
         return argv, kwargs
+
+
+@elementclass
+class choose(XslBase, NoArgs):
+    '''choose[ when +, otherwise ?]
+    '''
 
 @elementclass
 class when(XslBase):
@@ -68,7 +69,7 @@ class when(XslBase):
 
 
 @elementclass
-class otherwise(XslBase):
+class otherwise(XslBase, NoArgs):
     pass
 
 
