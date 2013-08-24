@@ -52,6 +52,8 @@ class XslBase:
 
         ns = self.NAMESPACE
         name = self.__class__.__name__
+        # Replace underscore by hyphen.
+        name = name.replace('_', '-')
         return '{{{0}}}{1}'.format(ns, name)
 
 class NoArgs:
@@ -73,7 +75,7 @@ class apply_templates(XslBase):
 
     TODO This long output is ugly.  Suppress xmlns somehow?
     >>> pp_elt(apply_templates(mode='abc'))
-    <xsl:apply_templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform" mode="abc" select="*"/>
+    <xsl:apply-templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform" mode="abc" select="*"/>
     '''
     @staticmethod
     def make_args(select='*', mode=None):
