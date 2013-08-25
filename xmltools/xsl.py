@@ -216,6 +216,7 @@ class template(XslBase):
     </xsl:template>
     '''
 
+    # TODO: Allow template to have name, mode and match.
     allow_extension = True
 
     @staticmethod
@@ -239,6 +240,37 @@ class text(XslBase):
         elt.text = self.head['text']
         return elt
 
+
+@elementclass
+class stylesheet(XslBase):
+    '''
+    >>> elt = stylesheet(
+    ...    wibble = 'an-expression',
+    ...    wobble = [text('template body'),],
+    ...    woozle = '',
+    ... )[
+    ...     template(),
+    ...  ]
+
+    TODO: Note that params output in alphabetic order.
+    >>> pp_elt(elt)
+    <xsl:stylesheet version="1.0">
+      <xsl:param name="wibble" select="an-expression"/>
+      <xsl:param name="wobble">
+        <xsl:text>template body</xsl:text>
+      </xsl:param>
+      <xsl:param name="woozle" select=""/>
+      <xsl:template/>
+    </xsl:stylesheet>
+    '''
+
+    # TODO: Allow stylesheet to import.
+    allow_extension = True
+
+    @staticmethod
+    def process_args(**parameters):
+        body = process_parameters(param, parameters)
+        return dict(version='1.0'), body
 
 @elementclass
 class when(XslBase):
