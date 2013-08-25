@@ -48,7 +48,11 @@ def pp_elt(elt):
     # Start hack to suppress names spaces in output.
     @elementclass
     class wrap(XslBase):
-        pass
+
+        # GOTCHA: Not doing this was raising many exceptions.
+        @staticmethod
+        def process_args():
+            return {}, None
 
     wrapper = wrap[elt,]
     xml = wrapper.xml
@@ -72,6 +76,17 @@ class XslBase:
         name = name.replace('_', '-')
         return '{{{0}}}{1}'.format(ns, name)
 
+
+    def make_attrib(self, args):
+
+        return dict(
+            (name, unicode(value))
+            for name, value in self.head.items()
+            # TODO: Test suppress when value is None.
+            if value is not None
+            )
+
+
 class NoArgs:
 
     @staticmethod
@@ -79,7 +94,7 @@ class NoArgs:
 
         if argv or kwargs:
             raise ValueError('this element class has no parameters')
-        return (argv, kwargs), None
+        return {}, None
 
 
 # Keep the element classes in alphabetical order.
@@ -92,7 +107,7 @@ class apply_templates(XslBase):
     '''
     @staticmethod
     def process_args(select='*', mode=None):
-        return ((), locals()), None
+        return locals(), None
 
 
 @elementclass
@@ -122,7 +137,7 @@ class call_template(XslBase):
         for name, value in sorted(parameters.items()):
             body.append(with_param(name, value))
 
-        return ((), dict(name=_name)), body
+        return dict(name=_name), body
 
 
 @elementclass
@@ -141,13 +156,13 @@ class text(XslBase):
 
     @staticmethod
     def process_args(text):
-        return ((), locals()), None
+        return locals(), None
 
     @property
     def xml(self):
 
         elt = lxml.etree.Element(self.xml_tag)
-        elt.text = self.head[1]['text']
+        elt.text = self.head['text']
         return elt
 
 @elementclass
@@ -160,7 +175,7 @@ class param(XslBase):
     '''
     @staticmethod
     def process_args(name, select=None):
-        return ((), locals()), None
+        return locals(), None
 
 
 @elementclass
@@ -169,7 +184,7 @@ class when(XslBase):
     # TODO: have elementclass promote process_args to staticmethod?
     @staticmethod
     def process_args(test):
-        return ((), locals()), None
+        return locals(), None
 
 
 @elementclass
@@ -193,10 +208,10 @@ class with_param(XslBase):
     def process_args(name, select=None):
 
         if isinstance(select, list):
-            return ((), dict(name=name)), select
+            return dict(name=name), select
 
         else:
-            return ((), locals()), None
+            return locals(), None
 
 
 if __name__ == '__main__':
