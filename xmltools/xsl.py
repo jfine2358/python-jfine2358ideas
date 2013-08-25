@@ -100,13 +100,32 @@ class call_template(XslBase):
     '''
     >>> pp_elt(call_template('aaa'))
     <xsl:call-template name="aaa"/>
+
+    >>> pp_elt(call_template('aaa',
+    ...    wibble = 'an-expression',
+    ...    wobble = [text('template body'),],
+    ... ))
+    <xsl:call-template name="aaa">
+      <xsl:with-param name="wibble"/>
+      <xsl:with-param name="wobble"/>
+    </xsl:call-template>
+
     '''
 
     @staticmethod
-    def process_args(_name, **kwargs):
+    def process_args(_name, **parameters):
 
-        # TODO: Process kwargs.
-        return ((), dict(name=_name)), None
+        # Process kwargs by appending to the body.
+        body = []
+
+        # Always process the parameters in same order.
+        for name, value in sorted(parameters.items()):
+
+            body.append(
+                with_param(name)
+                )
+
+        return ((), dict(name=_name)), body
 
 
 @elementclass
@@ -153,6 +172,18 @@ class when(XslBase):
     # TODO: have elementclass promote process_args to staticmethod?
     @staticmethod
     def process_args(test):
+        return ((), locals()), None
+
+
+@elementclass
+class with_param(XslBase):
+    '''
+    >>> pp_elt(with_param('wibble'))
+    <xsl:with-param name="wibble"/>
+    '''
+    @staticmethod
+    def process_args(name):
+
         return ((), locals()), None
 
 
