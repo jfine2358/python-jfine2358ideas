@@ -176,6 +176,29 @@ class otherwise(XslBase, NoArgs):
     pass
 
 
+@elementclass
+class template(XslBase):
+    '''
+    >>> elt = template(
+    ...    wibble = 'an-expression',
+    ...    wobble = [text('template body'),],
+    ... )
+
+    >>> pp_elt(elt)
+    <xsl:template>
+      <xsl:param name="wibble" select="an-expression"/>
+      <xsl:param name="wobble">
+        <xsl:text>template body</xsl:text>
+      </xsl:param>
+    </xsl:template>
+    '''
+
+    @staticmethod
+    def process_args(**parameters):
+        body = process_parameters(param, parameters)
+        return {}, body
+
+
 # An element that has a custom xml property.
 @elementclass
 class text(XslBase):
@@ -199,9 +222,16 @@ class param(XslBase):
     >>> pp_elt(param('width', '*'))
     <xsl:param name="width" select="*"/>
     '''
+
+    # Keep same as xsl.with_param.
     @staticmethod
     def process_args(name, select=None):
-        return locals(), None
+
+        if isinstance(select, list):
+            return dict(name=name), select
+
+        else:
+            return locals(), None
 
 
 @elementclass
@@ -229,7 +259,7 @@ class with_param(XslBase):
     </xsl:with-param>
     '''
 
-    # Same as xsl.param.
+    # Keep same as xsl.param.
     @staticmethod
     def process_args(name, select=None):
 
