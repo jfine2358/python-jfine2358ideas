@@ -104,16 +104,10 @@ class call_template(XslBase):
 
     @staticmethod
     def process_args(_name, **kwargs):
-        return ((_name,), kwargs), None
 
-    @property
-    def xml(self):
+        # TODO: Process kwargs.
+        return ((), dict(name=_name)), None
 
-        name = self.head[0][0]
-        elt = lxml.etree.Element(self.xml_tag)
-        elt.attrib['name'] = name
-
-        return elt
 
 @elementclass
 class choose(XslBase, NoArgs):
