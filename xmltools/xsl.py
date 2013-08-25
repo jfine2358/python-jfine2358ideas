@@ -301,6 +301,20 @@ class stylesheet(XslBase):
         return dict(version='1.0'), body
 
 @elementclass
+class value_of(XslBase):
+    '''
+    >>> pp_elt(value_of('abc'))
+    '''
+    # Keep same as xsl.param etc.
+    @staticmethod
+    def process_args(select=None):
+
+        if isinstance(select, list):
+            return dict(name=name), select
+        else:
+            return locals(), None
+
+@elementclass
 class when(XslBase):
 
     # TODO: have elementclass promote process_args to staticmethod?
