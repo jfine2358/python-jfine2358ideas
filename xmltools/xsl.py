@@ -177,6 +177,26 @@ class otherwise(XslBase, NoArgs):
 
 
 @elementclass
+class param(XslBase):
+    '''
+    >>> pp_elt(param('width'))
+    <xsl:param name="width"/>
+    >>> pp_elt(param('width', '*'))
+    <xsl:param name="width" select="*"/>
+    '''
+
+    # Keep same as xsl.with_param.
+    @staticmethod
+    def process_args(name, select=None):
+
+        if isinstance(select, list):
+            return dict(name=name), select
+
+        else:
+            return locals(), None
+
+
+@elementclass
 class template(XslBase):
     '''
     >>> elt = template(
@@ -213,25 +233,6 @@ class text(XslBase):
         elt = lxml.etree.Element(self.xml_tag)
         elt.text = self.head['text']
         return elt
-
-@elementclass
-class param(XslBase):
-    '''
-    >>> pp_elt(param('width'))
-    <xsl:param name="width"/>
-    >>> pp_elt(param('width', '*'))
-    <xsl:param name="width" select="*"/>
-    '''
-
-    # Keep same as xsl.with_param.
-    @staticmethod
-    def process_args(name, select=None):
-
-        if isinstance(select, list):
-            return dict(name=name), select
-
-        else:
-            return locals(), None
 
 
 @elementclass
