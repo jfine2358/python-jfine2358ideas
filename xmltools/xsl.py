@@ -202,7 +202,9 @@ class template(XslBase):
     >>> elt = template(
     ...    wibble = 'an-expression',
     ...    wobble = [text('template body'),],
-    ... )
+    ... )[
+    ...    text('TEMPLATE BODY'),
+    ... ]
 
     >>> pp_elt(elt)
     <xsl:template>
@@ -210,8 +212,11 @@ class template(XslBase):
       <xsl:param name="wobble">
         <xsl:text>template body</xsl:text>
       </xsl:param>
+      <xsl:text>TEMPLATE BODY</xsl:text>
     </xsl:template>
     '''
+
+    allow_extension = True
 
     @staticmethod
     def process_args(**parameters):

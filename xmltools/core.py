@@ -137,6 +137,10 @@ class ElementBase:
     head = None                 # Set to (tuple, dict) by elt(...).
     body = None                 # Set to a tuple by elt(...)[...].
 
+    # TODO: This is a bit of a hack - revise?
+    # TODO: Provide testing.
+    allow_extension = False     # Allow one extension.
+
     def process_args(*argv, **kwargs):
         '''Return initial values for (head, body).
 
@@ -154,15 +158,23 @@ class ElementBase:
     def __getitem__(self, body):
         '''Return self, mutated by self.body = body.'''
 
-        # Forbid elt(...)[...][...].
-        if self.body is not None:
-            raise AttributeError('element already has body')
+        # TODO: Test for giving body to element that has none.
 
         # TOOD: Make this optional? Place in element class bases.
         if not isinstance(body, tuple):
             raise ValueError('Expecting tuple, missing comma perhaps')
 
-        self.body = body
+        # In principle can add body, so add it.
+        if self.body is None:
+            self.body = body
+        else:
+            if self.allow_extension:
+                self.body.extend(body)
+                self.allow_extension = False # One time only.
+            else:
+                # Forbid elt(...)[...][...].
+                raise AttributeError('element already has body')
+
         return self
 
 
