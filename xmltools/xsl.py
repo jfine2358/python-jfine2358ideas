@@ -116,10 +116,14 @@ class call_template(XslBase):
     >>> pp_elt(call_template('aaa'))
     <xsl:call-template name="aaa"/>
 
-    >>> pp_elt(call_template('aaa',
+    Here's what we write.
+    >>> elt = call_template('aaa',
     ...    wibble = 'an-expression',
     ...    wobble = [text('template body'),],
-    ... ))
+    ... )
+
+    Here's what we get.
+    >>> pp_elt(elt)
     <xsl:call-template name="aaa">
       <xsl:with-param name="wibble" select="an-expression"/>
       <xsl:with-param name="wobble">
