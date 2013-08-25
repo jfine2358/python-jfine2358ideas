@@ -109,7 +109,7 @@ class call_template(XslBase):
     @property
     def xml(self):
 
-        name = self.args[0][0]
+        name = self.head[0][0]
         elt = lxml.etree.Element(self.xml_tag)
         elt.attrib['name'] = name
 
@@ -137,7 +137,7 @@ class text(XslBase):
     def xml(self):
 
         elt = lxml.etree.Element(self.xml_tag)
-        elt.text = self.args[1]['text']
+        elt.text = self.head[1]['text']
         return elt
 
 @elementclass

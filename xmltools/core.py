@@ -134,7 +134,7 @@ class elementclass(type):
 
 class ElementBase:
 
-    args = None                 # Set to (tuple, dict) by elt(...).
+    head = None                 # Set to (tuple, dict) by elt(...).
     body = None                 # Set to a tuple by elt(...)[...].
 
     process_args = return_args  # Subclass can override.
@@ -143,7 +143,7 @@ class ElementBase:
     def __init__(self, *argv, **kwargs):
         '''Read the source for init to see what it does.'''
 
-        self.args = self.process_args(*argv, **kwargs)
+        self.head = self.process_args(*argv, **kwargs)
 
 
     def __getitem__(self, body):
@@ -184,7 +184,7 @@ class ElementBase:
 
         # TODO: More tests.
         elt = lxml.etree.Element(self.xml_tag)
-        elt.attrib.update(self.make_attrib(self.args))
+        elt.attrib.update(self.make_attrib(self.head))
 
         if self.body:
             for child in self.body:
