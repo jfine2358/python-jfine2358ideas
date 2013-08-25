@@ -96,6 +96,26 @@ class apply_templates(XslBase):
 
 
 @elementclass
+class call_template(XslBase):
+    '''
+    >>> pp_elt(call_template('aaa'))
+    <xsl:call-template name="aaa"/>
+    '''
+
+    @staticmethod
+    def make_args(_name, **kwargs):
+        return (_name,), kwargs
+
+    @property
+    def xml(self):
+
+        name = self.args[0][0]
+        elt = lxml.etree.Element(self.xml_tag)
+        elt.attrib['name'] = name
+
+        return elt
+
+@elementclass
 class choose(XslBase, NoArgs):
     '''choose[ when +, otherwise ?]
     '''
