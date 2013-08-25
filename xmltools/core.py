@@ -162,7 +162,9 @@ class ElementBase:
 
         # TOOD: Make this optional? Place in element class bases.
         if not isinstance(body, tuple):
-            raise ValueError('Expecting tuple, missing comma perhaps')
+            body = (body,)
+            if 0:
+                raise ValueError('Expecting tuple, missing comma perhaps')
 
         # In principle can add body, so add it.
         if self.body is None:
