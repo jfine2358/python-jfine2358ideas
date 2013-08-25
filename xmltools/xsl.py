@@ -200,6 +200,7 @@ class param(XslBase):
 class template(XslBase):
     '''
     >>> elt = template(
+    ...    __match ='aa',
     ...    wibble = 'an-expression',
     ...    wobble = [text('template body'),],
     ... )[
@@ -207,7 +208,7 @@ class template(XslBase):
     ... ]
 
     >>> pp_elt(elt)
-    <xsl:template>
+    <xsl:template match="aa">
       <xsl:param name="wibble" select="an-expression"/>
       <xsl:param name="wobble">
         <xsl:text>template body</xsl:text>
@@ -221,8 +222,35 @@ class template(XslBase):
 
     @staticmethod
     def process_args(**parameters):
+
+        # Allow xsl.template to have match etc parameters, via __match
+        # (a bit of a hack)
+
+        # TODO: Clean up and refactor this __ hack for template
+        # attributes.
+
+        # There might be head items in the parameters.
+        # Make list of items to move.
+        move_pairs = tuple(
+            (key[2:], key)
+            for key in parameters
+            if key.startswith('__')
+            )
+
+        # Move the items.
+        head = {}
+        for k1, k2 in move_pairs:
+            head[k1] = parameters[k2]
+            del parameters[k2]
+
+        # Check the head dictionary.
+        def check_head(match=None, name=None, priority=None, mode=None):
+            pass
+        check_head(**head)
+
+        # Almost done.  Now create the body and return (head, body).
         body = process_parameters(param, parameters)
-        return {}, body
+        return head, body
 
 
 # An element that has a custom xml property.
