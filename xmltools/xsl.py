@@ -106,24 +106,21 @@ class call_template(XslBase):
     ...    wobble = [text('template body'),],
     ... ))
     <xsl:call-template name="aaa">
-      <xsl:with-param name="wibble"/>
-      <xsl:with-param name="wobble"/>
+      <xsl:with-param name="wibble" select="an-expression"/>
+      <xsl:with-param name="wobble">
+        <xsl:text>template body</xsl:text>
+      </xsl:with-param>
     </xsl:call-template>
-
     '''
 
     @staticmethod
     def process_args(_name, **parameters):
 
         # Process kwargs by appending to the body.
-        body = []
-
         # Always process the parameters in same order.
+        body = []
         for name, value in sorted(parameters.items()):
-
-            body.append(
-                with_param(name)
-                )
+            body.append(with_param(name, value))
 
         return ((), dict(name=_name)), body
 
@@ -180,11 +177,26 @@ class with_param(XslBase):
     '''
     >>> pp_elt(with_param('wibble'))
     <xsl:with-param name="wibble"/>
-    '''
-    @staticmethod
-    def process_args(name):
 
-        return ((), locals()), None
+    TOOD: In this case, forbid adding to body.
+    >>> pp_elt(with_param('wibble', 'an-expression'))
+    <xsl:with-param name="wibble" select="an-expression"/>
+
+    >>> pp_elt(with_param('wibble', [text('template-body')]))
+    <xsl:with-param name="wibble">
+      <xsl:text>template-body</xsl:text>
+    </xsl:with-param>
+    '''
+
+    # Same as xsl.param.
+    @staticmethod
+    def process_args(name, select=None):
+
+        if isinstance(select, list):
+            return ((), dict(name=name)), select
+
+        else:
+            return ((), locals()), None
 
 
 if __name__ == '__main__':
