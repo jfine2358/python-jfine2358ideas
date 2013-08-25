@@ -102,12 +102,22 @@ class NoArgs:
 @elementclass
 class apply_templates(XslBase):
     '''
-    >>> pp_elt(apply_templates(mode='abc'))
+    Use trailing underscore to access 'tag parameters'.
+    >>> pp_elt(apply_templates(mode_='abc'))
     <xsl:apply-templates mode="abc" select="*"/>
+
+    >>> elt = apply_templates(mode='abc',
+    ...    wibble = 'an-expression',
+    ...    wobble = [text('template body'),],
+    ... )
+
+    >>> pp_elt(elt)
+    <xsl:apply-templates select="*"/>
     '''
     @staticmethod
-    def process_args(select='*', mode=None):
-        return locals(), None
+    def process_args(select_='*', mode_=None, **parameters):
+
+        return dict(select=select_, mode=mode_), None
 
 
 @elementclass
