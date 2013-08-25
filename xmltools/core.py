@@ -49,12 +49,12 @@ TODO: Clean up the test code.
   <html/>
 </xsl:template>
 
-Use make_args to give custom argument processing. Here's how to
+Use process_args to give custom argument processing. Here's how to
 provide default values, and map positional to named arguments.
 >>> @elementclass
 ... class ccc:
 ...     @staticmethod
-...     def make_args(a=0, b=1, c=2):
+...     def process_args(a=0, b=1, c=2):
 ...         return (), locals()
 
 >>> doit(ccc)
@@ -66,11 +66,11 @@ provide default values, and map positional to named arguments.
 This example also provides some error checking.
 >>> ccc(1, 2, 3, 4)
 Traceback (most recent call last):
-TypeError: make_args() takes at most 3 arguments (4 given)
+TypeError: process_args() takes at most 3 arguments (4 given)
 
 >>> ccc(d=5)
 Traceback (most recent call last):
-TypeError: make_args() got an unexpected keyword argument 'd'
+TypeError: process_args() got an unexpected keyword argument 'd'
 
 
 Use make_attrib to give custom conversion of the args into an
@@ -137,13 +137,13 @@ class ElementBase:
     args = None                 # Set to (tuple, dict) by elt(...).
     body = None                 # Set to a tuple by elt(...)[...].
 
-    make_args = return_args  # Subclass can override.
+    process_args = return_args  # Subclass can override.
 
 
     def __init__(self, *argv, **kwargs):
         '''Read the source for init to see what it does.'''
 
-        self.args = self.make_args(*argv, **kwargs)
+        self.args = self.process_args(*argv, **kwargs)
 
 
     def __getitem__(self, body):

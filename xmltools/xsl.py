@@ -75,7 +75,7 @@ class XslBase:
 class NoArgs:
 
     @staticmethod
-    def make_args(*argv, **kwargs):
+    def process_args(*argv, **kwargs):
 
         if argv or kwargs:
             raise ValueError('this element class has no parameters')
@@ -91,7 +91,7 @@ class apply_templates(XslBase):
     <xsl:apply-templates mode="abc" select="*"/>
     '''
     @staticmethod
-    def make_args(select='*', mode=None):
+    def process_args(select='*', mode=None):
         return (), locals()
 
 
@@ -103,7 +103,7 @@ class call_template(XslBase):
     '''
 
     @staticmethod
-    def make_args(_name, **kwargs):
+    def process_args(_name, **kwargs):
         return (_name,), kwargs
 
     @property
@@ -130,7 +130,7 @@ class otherwise(XslBase, NoArgs):
 class text(XslBase):
 
     @staticmethod
-    def make_args(text):
+    def process_args(text):
         return (), locals()
 
     @property
@@ -149,16 +149,16 @@ class param(XslBase):
     <xsl:param name="width" select="*"/>
     '''
     @staticmethod
-    def make_args(name, select=None):
+    def process_args(name, select=None):
         return (), locals()
 
 
 @elementclass
 class when(XslBase):
 
-    # TODO: have elementclass promote make_args to staticmethod?
+    # TODO: have elementclass promote process_args to staticmethod?
     @staticmethod
-    def make_args(test):
+    def process_args(test):
         return (), locals()
 
 
