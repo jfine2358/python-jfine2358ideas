@@ -55,7 +55,7 @@ provide default values, and map positional to named arguments.
 ... class ccc:
 ...     @staticmethod
 ...     def process_args(a=0, b=1, c=2):
-...         return (), locals()
+...         return ((), locals()), None
 
 >>> doit(ccc)
 '<ccc a="0" c="2" b="1"/>'
@@ -137,13 +137,18 @@ class ElementBase:
     head = None                 # Set to (tuple, dict) by elt(...).
     body = None                 # Set to a tuple by elt(...)[...].
 
-    process_args = return_args  # Subclass can override.
+    def process_args(*argv, **kwargs):
+        '''Return initial values for (head, body).
+
+        Subclass can, and probably should, override.
+        '''
+        return (argv, kwargs), None
 
 
     def __init__(self, *argv, **kwargs):
         '''Read the source for init to see what it does.'''
 
-        self.head = self.process_args(*argv, **kwargs)
+        self.head, self.body = self.process_args(*argv, **kwargs)
 
 
     def __getitem__(self, body):

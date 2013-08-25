@@ -79,7 +79,7 @@ class NoArgs:
 
         if argv or kwargs:
             raise ValueError('this element class has no parameters')
-        return argv, kwargs
+        return (argv, kwargs), None
 
 
 # Keep the element classes in alphabetical order.
@@ -92,7 +92,7 @@ class apply_templates(XslBase):
     '''
     @staticmethod
     def process_args(select='*', mode=None):
-        return (), locals()
+        return ((), locals()), None
 
 
 @elementclass
@@ -104,7 +104,7 @@ class call_template(XslBase):
 
     @staticmethod
     def process_args(_name, **kwargs):
-        return (_name,), kwargs
+        return ((_name,), kwargs), None
 
     @property
     def xml(self):
@@ -131,7 +131,7 @@ class text(XslBase):
 
     @staticmethod
     def process_args(text):
-        return (), locals()
+        return ((), locals()), None
 
     @property
     def xml(self):
@@ -150,7 +150,7 @@ class param(XslBase):
     '''
     @staticmethod
     def process_args(name, select=None):
-        return (), locals()
+        return ((), locals()), None
 
 
 @elementclass
@@ -159,7 +159,7 @@ class when(XslBase):
     # TODO: have elementclass promote process_args to staticmethod?
     @staticmethod
     def process_args(test):
-        return (), locals()
+        return ((), locals()), None
 
 
 if __name__ == '__main__':
