@@ -97,6 +97,17 @@ class NoArgs:
         return {}, None
 
 
+def process_parameters(cls, parameters):
+    '''Return body consisting of cls elements.
+
+    The parameters are always in alphabetical order.
+    '''
+    body = []
+    for name, value in sorted(parameters.items()):
+        body.append(cls(name, value))
+    return body
+
+
 # Keep the element classes in alphabetical order.
 
 @elementclass
@@ -106,18 +117,25 @@ class apply_templates(XslBase):
     >>> pp_elt(apply_templates(mode_='abc'))
     <xsl:apply-templates mode="abc" select="*"/>
 
-    >>> elt = apply_templates(mode='abc',
+    GOTCHA: Typed 'mode' instead of 'mode_'.
+    TODO: Avoid this gotcha by using type(arg).
+    >>> elt = apply_templates(mode_='abc',
     ...    wibble = 'an-expression',
     ...    wobble = [text('template body'),],
     ... )
 
     >>> pp_elt(elt)
-    <xsl:apply-templates select="*"/>
+    <xsl:apply-templates mode="abc" select="*">
+      <xsl:with-param name="wibble" select="an-expression"/>
+      <xsl:with-param name="wobble">
+        <xsl:text>template body</xsl:text>
+      </xsl:with-param>
+    </xsl:apply-templates>
     '''
     @staticmethod
     def process_args(select_='*', mode_=None, **parameters):
-
-        return dict(select=select_, mode=mode_), None
+        body = process_parameters(with_param, parameters)
+        return dict(select=select_, mode=mode_), body
 
 
 @elementclass
@@ -144,13 +162,7 @@ class call_template(XslBase):
 
     @staticmethod
     def process_args(_name, **parameters):
-
-        # Process kwargs by appending to the body.
-        # Always process the parameters in same order.
-        body = []
-        for name, value in sorted(parameters.items()):
-            body.append(with_param(name, value))
-
+        body = process_parameters(with_param, parameters)
         return dict(name=_name), body
 
 
