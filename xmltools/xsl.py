@@ -33,9 +33,15 @@ Here's a populated choose element.
 </xsl:choose>
 
 It's an error to give choose an argument.
+
+TODO: Make this more like
 >>> choose(a=1)
 Traceback (most recent call last):
 ValueError: this element class has no parameters
+
+
+TypeError: process_args() takes no arguments (1 given)
+
 '''
 
 import lxml.etree
@@ -274,7 +280,16 @@ class call_template(XslBase):
 
 @elementclass
 class choose(XslBase, NoArgs):
-    '''choose[ when +, otherwise ?]
+    '''
+    >>> pp_elt(choose)
+    <xsl:choose/>
+    '''
+
+@elementclass
+class comment(XslBase, NoArgs):
+    '''
+    >>> pp_elt(comment)
+    <xsl:comment/>
     '''
 
 @elementclass
