@@ -2,7 +2,7 @@
 
 '''
 
-# import lxml.etree
+import lxml.etree
 
 __metaclass__ = type
 
@@ -109,6 +109,21 @@ def tagfactory(bases, fn):
     >>> sorted(a.head.items())
     [('a', 1), ('b', 2)]
 
+    >>> print(a.pp_xml[:-1])
+    <wibble a="1" b="2"/>
+
+    >>> @deco
+    ... def td(): return{}
+
+    >>> @deco
+    ... def tr(): return{}
+
+    >>> print(tr[td['aaa',], td['bbb',]].pp_xml[:-1])
+    <tr>
+      <td>aaa</td>
+      <td>bbb</td>
+    </tr>
+
     >>> a = wibble(b=1, c=2)
     Traceback (most recent call last):
     ValueError: missing keys: a
@@ -119,9 +134,9 @@ def tagfactory(bases, fn):
     'docstring'
     '''
     # TODO: doctest fn.__name__.
-    fn.__name__ = fn.__name__ + '__process_args'
     process_args = staticmethod(fn)
     tag = tagtype(fn.__name__, bases, dict(process_args = process_args))
+    fn.__name__ = fn.__name__ + '__process_args'
     tag.__doc__ = fn.__doc__
 
     return tag
@@ -167,7 +182,53 @@ class wobble:
             raise ValueError(msg.format(missing_keys))
 
         self.head = head
+        self.body = None
 
+    @property
+    def xml_tag(self):
+        '''Return class name, for use as the xml_tag.'''
+        return self.__class__.__name__
+
+    @staticmethod
+    def make_attrib(args):
+
+        return dict(
+            (name, unicode(value))
+            for name, value in args.items()
+            # TODO: Test suppress when value is None.
+            if value is not None
+            )
+
+    @property
+    def xml(self):
+
+        # TODO: More tests.
+        elt = lxml.etree.Element(self.xml_tag)
+        elt.attrib.update(self.make_attrib(self.head))
+
+        if self.body:
+            for child in self.body:
+
+                # TODO: What if successive text nodes?
+                # TODO: Allow custom processing of special children
+                if isinstance(child, str):
+                    # TODO: Is len redundant?
+                    if len(elt):
+                        elt[-1].tail = child
+                    else:
+                        elt.text = child
+                    continue
+
+                elt.append(child.xml)
+
+        return elt
+
+
+    @property
+    def pp_xml(self):
+
+        s = lxml.etree.tostring(self.xml, pretty_print=True)
+        return s
 
 
 if __name__ == '__main__':
