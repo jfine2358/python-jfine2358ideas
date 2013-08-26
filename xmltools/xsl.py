@@ -308,6 +308,18 @@ class copy(XslBase):
 
 
 @elementclass
+class copy_of(XslBase):
+    '''
+    >>> pp_elt(copy_of('author|title'))
+    <xsl:copy-of select="author|title"/>
+    '''
+
+    @staticmethod
+    def process_args(select):
+        return locals(), None
+
+
+@elementclass
 class otherwise(XslBase, NoArgs):
     pass
 
