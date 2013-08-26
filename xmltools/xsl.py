@@ -292,6 +292,21 @@ class comment(XslBase, NoArgs):
     <xsl:comment/>
     '''
 
+
+@elementclass
+class copy(XslBase):
+    '''
+    >>> pp_elt(copy)
+    <xsl:copy/>
+
+    >>> pp_elt(copy('padding colours'))
+    <xsl:copy use-attribute-sets="padding colours"/>
+    '''
+    @staticmethod
+    def process_args(use_attribute_sets=None):
+        return locals(), None
+
+
 @elementclass
 class otherwise(XslBase, NoArgs):
     pass
