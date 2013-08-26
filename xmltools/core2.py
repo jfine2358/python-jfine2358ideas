@@ -21,18 +21,25 @@ class _TagBase:
 
         self = argv[0]          # In trouble if this fails.
 
+        # TODO: Refactor and doctest this.
         if len(argv) != 1:
-            # TODO: Revise and doctest this.
             name = type(self).__name__
             # TypeError: f() takes exactly 0 arguments (1 given)
             msg = '{0}() does not take positional arguments ({1} given)'
             raise TypeError(msg.format(name, len(argv) - 1))
 
+        self.head = self.process_args(**kwargs)
+
+    @staticmethod
+    def process_args(**kwargs):
+
+        return kwargs
+
 
 class tagtype(type):
     '''
     >>> tag = tagtype('tag', (), {})
-    >>> a = tag(aaa='1', bbb='2')
+    >>> a = tag(aaa=1, bbb=2)
     >>> b = a[1, 2, 3]
     >>> c = tag[1, 2, 3]
     >>> tag == type(a) == type(b) == type(c)
@@ -42,6 +49,10 @@ class tagtype(type):
 
     >>> type(tag) == tagtype
     True
+
+    >>> a.head
+    {'aaa': 1, 'bbb': 2}
+
     '''
 
     # TODO: This is a basic class modifier - manipulate type and
