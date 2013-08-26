@@ -112,6 +112,10 @@ class mode(str):
     '''Use mode('ns:name') pass a mode argument.
     '''
 
+class namespace(str):
+    '''Use namespace('http://example.org') pass a namespace argument.
+    '''
+
 class qname(str):
     '''Use mode('ns:name') pass a name argument.
     '''
@@ -174,6 +178,28 @@ class apply_templates(XslBase):
 
         body = process_parameters(with_param, parameters)
         return head, body
+
+
+@elementclass
+class attribute(XslBase):
+    '''
+    The rules for what happens here are a bit odd (see Kay's book).
+    It would be good to clean this up by revising the interface.  From
+    the information set point of view, what's required is a (uri,
+    ncname) pair.
+
+    >>> pp_elt(attribute('wibble'))
+    <xsl:attribute name="wibble"/>
+
+    >>> pp_elt(attribute('wibble', 'http://example.org'))
+    <xsl:attribute namespace="http://example.org" name="wibble"/>
+    '''
+
+    # GOTCHA: typed process_arguments, not warned.
+    @staticmethod
+    def process_args(name, namespace=None):
+
+        return locals(), None
 
 
 @elementclass
