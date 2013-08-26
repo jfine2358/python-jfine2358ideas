@@ -304,6 +304,7 @@ class stylesheet(XslBase):
 class value_of(XslBase):
     '''
     >>> pp_elt(value_of('abc'))
+    <xsl:value-of select="abc"/>
     '''
     # Keep same as xsl.param etc.
     @staticmethod
