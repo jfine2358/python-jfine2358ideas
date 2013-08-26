@@ -108,6 +108,14 @@ def process_parameters(cls, parameters):
     return body
 
 
+class mode(str):
+    '''Use mode('ns:name') pass a mode argument.
+    '''
+
+class qname(str):
+    '''Use mode('ns:name') pass a name argument.
+    '''
+
 ###################################################
 # Keep the element classes in alphabetical order. #
 ###################################################
@@ -119,23 +127,39 @@ class apply_imports(XslBase, NoArgs):
     <xsl:apply-imports/>
     '''
 
+def head_from_argv(argv):
+
+    # GOTCHA: map class to name, not vice-versa.
+    name_for = {
+        mode: 'mode',
+        str: 'select',
+        }
+
+    pairs = [(name_for[type(arg)], arg) for arg in argv]
+    head = dict(pairs)
+
+    if len(pairs) != len(head):
+        raise ValueError    # TODO: Test this.
+
+    return head
+
 
 @elementclass
 class apply_templates(XslBase):
     '''
     Use trailing underscore to access 'tag parameters'.
-    >>> pp_elt(apply_templates(mode_='abc'))
+    >>> pp_elt(apply_templates(mode('abc')))
     <xsl:apply-templates mode="abc" select="*"/>
 
-    GOTCHA: Typed 'mode' instead of 'mode_'.
-    TODO: Avoid this gotcha by using type(arg).
-    >>> elt = apply_templates(mode_='abc',
+    >>> elt = apply_templates(
+    ...    'author|title',
+    ...    mode('abc'),
     ...    wibble = 'an-expression',
     ...    wobble = [text('template body'),],
     ... )
 
     >>> pp_elt(elt)
-    <xsl:apply-templates mode="abc" select="*">
+    <xsl:apply-templates mode="abc" select="author|title">
       <xsl:with-param name="wibble" select="an-expression"/>
       <xsl:with-param name="wobble">
         <xsl:text>template body</xsl:text>
@@ -143,9 +167,13 @@ class apply_templates(XslBase):
     </xsl:apply-templates>
     '''
     @staticmethod
-    def process_args(select_='*', mode_=None, **parameters):
+    def process_args(*argv, **parameters):
+
+        head = dict(select='*')
+        head.update(head_from_argv(argv))
+
         body = process_parameters(with_param, parameters)
-        return dict(select=select_, mode=mode_), body
+        return head, body
 
 
 @elementclass
@@ -364,4 +392,6 @@ class with_param(XslBase):
 if __name__ == '__main__':
 
     import doctest
-    print(doctest.testmod())
+    # Ensure the we have xmltools.xsl.mode, not __main__.mode' etc.
+    import xmltools.xsl as this_module
+    print(doctest.testmod(this_module))
