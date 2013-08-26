@@ -80,41 +80,27 @@ class _TagBase:
         self = argv[0]          # In trouble if this fails.
         argv = argv[1:]
 
-        # TODO: I now think this code is a bad idea.
-        if 0:
-            # TODO: Refactor and doctest this.
-            if len(argv) != 1:
-                name = type(self).__name__
-                # TypeError: f() takes exactly 0 arguments (1 given)
-                msg = '{0}() does not take positional arguments ({1} given)'
-                raise TypeError(msg.format(name, len(argv) - 1))
-
+        # First make_args, and then use_args.
+        # TODO: Move make_args to the tagtype?
         args = self.make_args(argv, kwargs)
         self.use_args(args)
 
-
-    # TODO: tags in same collection to have same make_args.
-    # TODO: is there a need for a metaclassmethod?
+    # All tags of same type should have same make_args.  Provides
+    # basic properties.
     @classmethod
     def make_args(cls, argv, kwargs):
-
         if argv:
             raise ValueError
-
         return cls.process_args(**kwargs)
 
-    # TODO: tags in same collection to have same use_args.
-    # TODO: Migrate this, perhaps to basictag.
-    def use_args(self, args):
-
-        self.head = args
-
-
-    # TODO: This is particular to the tag.
+    # Usually, the processing of arguments will differ.
     @staticmethod
     def process_args(**kwargs):
-
         return kwargs
+
+    # All tags of the same type should have the same use_args.
+    def use_args(self, args):
+        self.head = args
 
 
 class tagtype(type):
