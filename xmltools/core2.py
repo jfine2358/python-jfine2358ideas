@@ -9,6 +9,8 @@ __metaclass__ = type
 # DONE: Able to create classes and instances.
 # DONE: Able to mutate instances.
 
+REQUIRED = object()             # Sentinel.
+
 class _TagBase:
 
     def __getitem__(self, body):
@@ -28,7 +30,27 @@ class _TagBase:
             msg = '{0}() does not take positional arguments ({1} given)'
             raise TypeError(msg.format(name, len(argv) - 1))
 
-        self.head = self.process_args(**kwargs)
+        # TODO: Migrate this, perhaps to basictag.
+        kwargs = self.process_args(**kwargs)
+
+        head = {}
+        errors = {}
+        for k, v in kwargs.items():
+
+            if v is None:
+                pass
+            elif v is REQUIRED:
+                errors[k] = v
+            else:
+                head[k] = v
+
+        if errors:
+            msg = "missing keys: {0}"
+            missing_keys = ','.join(errors)
+            raise ValueError(msg.format(missing_keys))
+
+        self.head = head
+
 
     @staticmethod
     def process_args(**kwargs):
@@ -69,31 +91,33 @@ class tagtype(type):
         return self()[body]
 
 
-def basictag(fn):
+def basictag(fn, bases=()):
     '''Return tag with fn(**kwargs) as processor.
     >>> @basictag
-    ... def wibble(a=1, b=2, c=None):
+    ... def wibble(a=REQUIRED, b=2, c=None):
     ...     'docstring'
     ...     return locals()
+
+    >>> a = wibble(a=1)
+    >>> sorted(a.head.items())
+    [('a', 1), ('b', 2)]
+
+    >>> a = wibble(b=1, c=2)
+    Traceback (most recent call last):
+    ValueError: missing keys: a
 
     >>> type(wibble) == tagtype
     True
     >>> wibble.__doc__
     'docstring'
-
-    >>> a = wibble()
-    >>> sorted(a.head.items())
-    [('a', 1), ('b', 2), ('c', None)]
     '''
-
+    # TODO: doctest fn.__name__.
+    fn.__name__ = fn.__name__ + '__process_args'
     process_args = staticmethod(fn)
-    tag = tagtype(fn.__name__, (), dict(process_args = process_args))
+    tag = tagtype(fn.__name__, bases, dict(process_args = process_args))
     tag.__doc__ = fn.__doc__
 
     return tag
-
-
-
 
 
 if __name__ == '__main__':
