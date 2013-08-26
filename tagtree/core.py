@@ -62,7 +62,13 @@ __metaclass__ = type
 
 REQUIRED = object()             # Sentinel.
 
-class _TagBase:
+# Naming convention
+# Type, BaseClass, Decorator
+# htmltagtype, htmltagbase, htmltag
+# xsltagtype, xsltagbase, xsltag
+# tagtype, tagbase, tagaaaa (name?)
+
+class tagbase:
 
     def __getitem__(self, body):
         '''Return self, mutated by self.body = body.'''
@@ -111,7 +117,7 @@ class tagtype(type):
     # bases.
     def __new__(cls_type, name, bases, cls_dict):
 
-        bases = bases + (_TagBase,)
+        bases = bases + (tagbase,)
         return type.__new__(cls_type, name, bases, cls_dict)
 
 

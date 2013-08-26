@@ -45,7 +45,7 @@ class xsltagtype(tagtype):
         return tag().xml_pp
 
 
-class XslBase:
+class xsltagbase:
 
     NAMESPACE = 'http://www.w3.org/1999/XSL/Transform'
 
@@ -53,7 +53,7 @@ class XslBase:
     def translate_name(name):
         '''Return QName associated to Python name.
 
-        >>> doit = XslBase.translate_name
+        >>> doit = xsltagbase.translate_name
         >>> doit('abc')
         'abc'
         >>> doit('if_')
@@ -116,7 +116,7 @@ class XslBase:
         return s2
 
 
-xsltag = tagdecoratorfactory(xsltagtype, (XslBase, wobble))
+xsltag = tagdecoratorfactory(xsltagtype, (xsltagbase, wobble))
 
 
 #################################################
