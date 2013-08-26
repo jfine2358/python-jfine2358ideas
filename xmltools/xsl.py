@@ -108,7 +108,17 @@ def process_parameters(cls, parameters):
     return body
 
 
-# Keep the element classes in alphabetical order.
+###################################################
+# Keep the element classes in alphabetical order. #
+###################################################
+
+@elementclass
+class apply_imports(XslBase, NoArgs):
+    '''
+    >>> pp_elt(apply_imports)
+    <xsl:apply-imports/>
+    '''
+
 
 @elementclass
 class apply_templates(XslBase):
