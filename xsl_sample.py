@@ -1,5 +1,6 @@
 import lxml.etree
 from xmltools.xsl import *
+import tagtree.xsl as xsl
 from xmltools.core import elementclass
 
 __metaclass__ = type
@@ -78,7 +79,7 @@ data = books[
 # Stylesheet.  Based on Kay's XSLT book.
 my_xsl = stylesheet[
 
-    template(__match = 'books',
+    xsl.template(match = 'books',
              )[
         html[
             body[
@@ -89,14 +90,14 @@ my_xsl = stylesheet[
             ]
         ],
 
-    template(__match = 'book')[
+    xsl.template(match = 'book')[
         tr[
             td['1'],
             apply_templates,
             ]
         ],
 
-    template(__match = 'author|title|price')[
+    xsl.template(match = 'author|title|price')[
         td[value_of('.')
            ]
         ],

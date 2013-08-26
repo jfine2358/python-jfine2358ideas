@@ -16,6 +16,10 @@ class _TagBase:
     def __getitem__(self, body):
         '''Return self, mutated by self.body = body.'''
 
+        # TODO: Provide tests, explain.
+        if type(body) != tuple:
+            body = (body,)
+
         self.body = body
         return self
 
