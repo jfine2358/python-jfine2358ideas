@@ -5,12 +5,8 @@
 <apply_templates/>
 
 
-TODO: Add xml etc to the metaclass to avoid
-
 >>> doit(apply_templates)
-Traceback (most recent call last):
-TypeError: 'property' object is unsubscriptable
-
+<apply_templates/>
 '''
 
 __metaclass__ = type
@@ -22,7 +18,17 @@ from .core import wobble        # TODO: rename, refactor.
 
 
 class xsltagtype(tagtype):
-    pass
+
+    # Properties of an xsltag, even when not instantiated.
+    # TODO: These need to be kept in sync with wibble (ugh).
+    @property
+    def xml(tag):
+        return tag().xml
+
+    @property
+    def pp_xml(tag):
+        return tag().pp_xml
+
 
 class XslBase:
     pass
