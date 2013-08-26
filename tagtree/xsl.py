@@ -1,16 +1,17 @@
 '''Tags for xslt stylesheets
 
->>> def doit(tree): print(tree.pp_xml[:-1])
->>> doit(apply_templates())
-<xsl:apply-templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/>
+>>> print(apply_templates().pp_xml)
+<xsl:apply-templates/>
 
->>> doit(apply_templates)
-<xsl:apply-templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/>
+TODO: Is .xml_pp better - the xml pretty printed.
+>>> print(apply_templates.pp_xml)
+<xsl:apply-templates/>
 
 '''
 
 __metaclass__ = type
 
+import lxml.etree
 
 from .core import tagtype
 from .core import tagdecoratorfactory
@@ -47,6 +48,19 @@ class XslBase:
         name = name.replace('_', '-')
         return '{{{0}}}{1}'.format(ns, name)
 
+    @property
+    def pp_xml(self):
+
+        # Wrap self to suppress namespace.
+        @xsltag
+        def wrap():
+            return locals()
+        xml = wrap[self,].xml              # TODO: Remove comma.
+
+        s = lxml.etree.tostring(xml, pretty_print=True)
+        lines = s.split('\n')
+        s2 = '\n'.join(line[2:] for line in lines[1:-2])
+        return s2
 
 
 xsltag = tagdecoratorfactory(xsltagtype, (XslBase, wobble))
