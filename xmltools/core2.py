@@ -21,21 +21,30 @@ class _TagBase:
 
     def __init__(*argv, **kwargs):
 
+        # Remove self from argv.
         self = argv[0]          # In trouble if this fails.
+        argv = argv[1:]
 
-        # TODO: Refactor and doctest this.
-        if len(argv) != 1:
-            name = type(self).__name__
-            # TypeError: f() takes exactly 0 arguments (1 given)
-            msg = '{0}() does not take positional arguments ({1} given)'
-            raise TypeError(msg.format(name, len(argv) - 1))
+        # TODO: I now think this code is a bad idea.
+        if 0:
+            # TODO: Refactor and doctest this.
+            if len(argv) != 1:
+                name = type(self).__name__
+                # TypeError: f() takes exactly 0 arguments (1 given)
+                msg = '{0}() does not take positional arguments ({1} given)'
+                raise TypeError(msg.format(name, len(argv) - 1))
 
-        # TODO: Migrate this, perhaps to basictag.
-        kwargs = self.process_args(**kwargs)
+        # TODO: What about argv?
+        args = self.process_args(**kwargs)
+        self.use_args(args)
+
+
+    # TODO: Migrate this, perhaps to basictag.
+    def use_args(self, args):
 
         head = {}
         errors = {}
-        for k, v in kwargs.items():
+        for k, v in args.items():
 
             if v is None:
                 pass
