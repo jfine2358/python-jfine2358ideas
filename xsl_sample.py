@@ -1,6 +1,7 @@
 import lxml.etree
 from tagtree.xsl import *
-from xmltools.core import elementclass
+from tagtree.core import tagdecoratorfactory
+from tagtree.core import wobble
 
 __metaclass__ = type
 
@@ -12,38 +13,52 @@ def pp2(elt):
     print(lxml.etree.tostring(elt, pretty_print=True))
 
 
+htmltag = tagdecoratorfactory(tagtype, (wobble,))
+datatag = tagdecoratorfactory(tagtype, (wobble,))
+
+
 # HTML elements.
-@elementclass
-class body: pass
+@htmltag
+def body(**kwargs):
+    return kwargs
 
-@elementclass
-class html: pass
+@htmltag
+def html(**kwargs):
+    return kwargs
 
-@elementclass
-class table: pass
+@htmltag
+def table(**kwargs):
+    return kwargs
 
-@elementclass
-class tr: pass
+@htmltag
+def tr(**kwargs):
+    return kwargs
 
-@elementclass
-class td: pass
+@htmltag
+def td(**kwargs):
+    return kwargs
 
 
 # Data elements.
-@elementclass
-class author: pass
+@datatag
+def author(**kwargs):
+    return kwargs
 
-@elementclass
-class book: pass
+@datatag
+def book(**kwargs):
+    return kwargs
 
-@elementclass
-class books: pass
+@datatag
+def books(**kwargs):
+    return kwargs
 
-@elementclass
-class price: pass
+@datatag
+def price(**kwargs):
+    return kwargs
 
-@elementclass
-class title: pass
+@datatag
+def title(**kwargs):
+    return kwargs
 
 
 # Data.  Based on Kay's XSLT book.
@@ -78,8 +93,7 @@ data = books[
 # Stylesheet.  Based on Kay's XSLT book.
 my_xsl = stylesheet[
 
-    template(match = 'books',
-             )[
+    template(match = 'books')[
         html[
             body[
                 table(width='640')[
