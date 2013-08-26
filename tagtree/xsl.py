@@ -2,11 +2,11 @@
 
 >>> def doit(tree): print(tree.pp_xml[:-1])
 >>> doit(apply_templates())
-<apply_templates/>
-
+<xsl:apply-templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/>
 
 >>> doit(apply_templates)
-<apply_templates/>
+<xsl:apply-templates xmlns:xsl="http://www.w3.org/1999/XSL/Transform"/>
+
 '''
 
 __metaclass__ = type
@@ -31,7 +31,22 @@ class xsltagtype(tagtype):
 
 
 class XslBase:
-    pass
+
+    NAMESPACE = 'http://www.w3.org/1999/XSL/Transform'
+
+    @property
+    def xml_tag(self):
+        return
+
+    @property
+    def xml_tag(self):
+
+        ns = self.NAMESPACE
+        name = self.__class__.__name__
+        # Replace underscore by hyphen.
+        name = name.replace('_', '-')
+        return '{{{0}}}{1}'.format(ns, name)
+
 
 
 xsltag = tagdecoratorfactory(xsltagtype, (XslBase, wobble))
