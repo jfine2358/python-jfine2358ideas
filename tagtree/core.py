@@ -95,10 +95,10 @@ class tagtype(type):
         return self()[body]
 
 
-def tagfactory(bases, fn):
+def tagfactory(metaclass, bases, fn):
     '''Return tag with fn(**kwargs) as processor.
 
-    >>> deco = tagdecoratorfactory((wobble,))
+    >>> deco = tagdecoratorfactory(tagtype, (wobble,))
 
     >>> @deco
     ... def wibble(a=REQUIRED, b=2, c=None):
@@ -135,17 +135,17 @@ def tagfactory(bases, fn):
     '''
     # TODO: doctest fn.__name__.
     process_args = staticmethod(fn)
-    tag = tagtype(fn.__name__, bases, dict(process_args = process_args))
+    tag = metaclass(fn.__name__, bases, dict(process_args = process_args))
     fn.__name__ = fn.__name__ + '__process_args'
     tag.__doc__ = fn.__doc__
 
     return tag
 
 
-def tagdecoratorfactory(bases, doc=None):
+def tagdecoratorfactory(tagtype, bases, doc=None):
 
     def deco(fn):
-        return tagfactory(bases, fn)
+        return tagfactory(tagtype, bases, fn)
 
     # TODO: Test __doc__
     deco.__doc__ = doc

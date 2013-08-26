@@ -16,15 +16,19 @@ TypeError: 'property' object is unsubscriptable
 __metaclass__ = type
 
 
+from .core import tagtype
 from .core import tagdecoratorfactory
 from .core import wobble        # TODO: rename, refactor.
 
+
+class xsltagtype(tagtype):
+    pass
 
 class XslBase:
     pass
 
 
-xsltag = tagdecoratorfactory((XslBase, wobble))
+xsltag = tagdecoratorfactory(xsltagtype, (XslBase, wobble))
 
 
 @xsltag
