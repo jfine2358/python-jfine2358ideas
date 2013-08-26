@@ -69,6 +69,33 @@ class tagtype(type):
         return self()[body]
 
 
+def basictag(fn):
+    '''Return tag with fn(**kwargs) as processor.
+    >>> @basictag
+    ... def wibble(a=1, b=2, c=None):
+    ...     'docstring'
+    ...     return locals()
+
+    >>> type(wibble) == tagtype
+    True
+    >>> wibble.__doc__
+    'docstring'
+
+    >>> a = wibble()
+    >>> sorted(a.head.items())
+    [('a', 1), ('b', 2), ('c', None)]
+    '''
+
+    process_args = staticmethod(fn)
+    tag = tagtype(fn.__name__, (), dict(process_args = process_args))
+    tag.__doc__ = fn.__doc__
+
+    return tag
+
+
+
+
+
 if __name__ == '__main__':
 
     import doctest
