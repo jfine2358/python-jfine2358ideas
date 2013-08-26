@@ -319,6 +319,36 @@ class copy_of(XslBase):
         return locals(), None
 
 
+# GOTCHA: I forgot the elementclass.
+@elementclass
+class decimal_format(XslBase):
+
+    '''
+    >>> pp_elt(decimal_format('default'))
+    <xsl:decimal-format name="default"/>
+
+    >>> pp_elt(decimal_format('wibble', infinity='lots'))
+    <xsl:decimal-format infinity="lots" name="wibble"/>
+
+    '''
+    @staticmethod
+    def process_args(
+        name=None,
+        decimal_separator=None,
+        grouping_separator=None,
+        infinity=None,          # An odd line of code.
+        minus_sign=None,
+        Nan=None,
+        percent=None,
+        per_mille=None,
+        zero_digit=None,
+        digit=None,
+        pattern_separator=None
+        ):
+
+        return locals(), None
+
+
 @elementclass
 class otherwise(XslBase, NoArgs):
     pass
