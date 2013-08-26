@@ -109,12 +109,14 @@ class tagtype(type):
         return self()[body]
 
 
-def basictag(fn, bases=()):
+def basictag(bases, fn):
     '''Return tag with fn(**kwargs) as processor.
-    >>> @basictag
-    ... def wibble(a=REQUIRED, b=2, c=None):
+    >>> def wibble(a=REQUIRED, b=2, c=None):
     ...     'docstring'
     ...     return locals()
+
+    >>> wibble = basictag((wobble,), wibble)
+
 
     >>> a = wibble(a=1)
     >>> sorted(a.head.items())
@@ -136,6 +138,47 @@ def basictag(fn, bases=()):
     tag.__doc__ = fn.__doc__
 
     return tag
+
+
+class wobble:
+
+    # TODO: tags in same collection to have same make_args.
+    # TODO: is there a need for a metaclassmethod?
+    @classmethod
+    def make_args(cls, argv, kwargs):
+        # TODO: What about argv?
+
+        return cls.process_args(**kwargs)
+
+    # TODO: tags in same collection to have same use_args.
+    # TODO: Migrate this, perhaps to basictag.
+    def use_args(self, args):
+
+        head = {}
+        errors = {}
+        for k, v in args.items():
+
+            if v is None:
+                pass
+            elif v is REQUIRED:
+                errors[k] = v
+            else:
+                head[k] = v
+
+        if errors:
+            msg = "missing keys: {0}"
+            missing_keys = ','.join(errors)
+            raise ValueError(msg.format(missing_keys))
+
+        self.head = head
+
+
+    # TODO: This is particular to the tag.
+    @staticmethod
+    def process_args(**kwargs):
+
+        return kwargs
+
 
 
 if __name__ == '__main__':
