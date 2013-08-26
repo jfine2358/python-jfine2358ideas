@@ -105,7 +105,7 @@ my_xsl = stylesheet[
 
     template(match = 'book')[
         tr[
-            td['1'],
+            td[number],
             apply_templates,
             ]
         ],
