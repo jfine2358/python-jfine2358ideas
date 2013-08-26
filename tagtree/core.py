@@ -1,5 +1,56 @@
 '''Rewrite of core.py to make it simpler.
 
+>>> tag = tagtype('tag', (), {})
+>>> a = tag(aaa=1, bbb=2)
+>>> b = a[1, 2, 3]
+>>> c = tag[1, 2, 3]
+>>> tag == type(a) == type(b) == type(c)
+True
+>>> a == b
+True
+
+>>> type(tag) == tagtype
+True
+
+>>> a.head
+{'aaa': 1, 'bbb': 2}
+
+
+>>> deco = tagdecoratorfactory(tagtype, (wobble,))
+
+>>> @deco
+... def wibble(a=REQUIRED, b=2, c=None):
+...     'docstring'
+...     return locals()
+
+>>> a = wibble(a=1)
+>>> sorted(a.head.items())
+[('a', 1), ('b', 2)]
+
+>>> print(a.pp_xml[:-1])
+<wibble a="1" b="2"/>
+
+>>> @deco
+... def td(): return{}
+
+>>> @deco
+... def tr(): return{}
+
+>>> print(tr[td['aaa',], td['bbb',]].pp_xml[:-1])
+<tr>
+  <td>aaa</td>
+  <td>bbb</td>
+</tr>
+
+>>> a = wibble(b=1, c=2)
+Traceback (most recent call last):
+ValueError: missing keys: a
+
+>>> type(wibble) == tagtype
+True
+>>> wibble.__doc__
+'docstring'
+
 '''
 
 import lxml.etree
@@ -68,21 +119,6 @@ class _TagBase:
 
 class tagtype(type):
     '''
-    >>> tag = tagtype('tag', (), {})
-    >>> a = tag(aaa=1, bbb=2)
-    >>> b = a[1, 2, 3]
-    >>> c = tag[1, 2, 3]
-    >>> tag == type(a) == type(b) == type(c)
-    True
-    >>> a == b
-    True
-
-    >>> type(tag) == tagtype
-    True
-
-    >>> a.head
-    {'aaa': 1, 'bbb': 2}
-
     '''
 
     # TODO: This is a basic class modifier - manipulate type and
@@ -101,41 +137,7 @@ class tagtype(type):
 
 def tagfactory(metaclass, bases, fn):
     '''Return tag with fn(**kwargs) as processor.
-
-    >>> deco = tagdecoratorfactory(tagtype, (wobble,))
-
-    >>> @deco
-    ... def wibble(a=REQUIRED, b=2, c=None):
-    ...     'docstring'
-    ...     return locals()
-
-    >>> a = wibble(a=1)
-    >>> sorted(a.head.items())
-    [('a', 1), ('b', 2)]
-
-    >>> print(a.pp_xml[:-1])
-    <wibble a="1" b="2"/>
-
-    >>> @deco
-    ... def td(): return{}
-
-    >>> @deco
-    ... def tr(): return{}
-
-    >>> print(tr[td['aaa',], td['bbb',]].pp_xml[:-1])
-    <tr>
-      <td>aaa</td>
-      <td>bbb</td>
-    </tr>
-
-    >>> a = wibble(b=1, c=2)
-    Traceback (most recent call last):
-    ValueError: missing keys: a
-
-    >>> type(wibble) == tagtype
-    True
-    >>> wibble.__doc__
-    'docstring'
+'
     '''
     # TODO: doctest fn.__name__.
     process_args = staticmethod(fn)
