@@ -63,6 +63,34 @@ def pp_elt(elt):
     print(s2)
 
 
+def translate_name(name):
+    '''Return QName associated to Python name.
+
+    >>> doit = translate_name
+    >>> doit('abc')
+    'abc'
+    >>> doit('if_')
+    'if'
+    >>> doit('ns__name')
+    'ns:name'
+
+    >>> doit('long_compound_name')
+    'long-compound-name'
+
+    >>> doit('ns__ns__name')
+    'ns:ns--name'
+    '''
+    # TODO: Translate first '
+
+    if name.endswith('_'):
+        name = name[:-1]
+
+    seq = name.split('__', 1)
+    if len(seq) == 2:
+        name = ':'.join(seq)
+
+    return name.replace('_', '-')
+
 class XslBase:
 
     NAMESPACE = 'http://www.w3.org/1999/XSL/Transform'
@@ -80,7 +108,7 @@ class XslBase:
     def make_attrib(self, args):
 
         return dict(
-            (name, unicode(value))
+            (translate_name(name), unicode(value))
             for name, value in self.head.items()
             # TODO: Test suppress when value is None.
             if value is not None
@@ -199,6 +227,20 @@ class attribute(XslBase):
     @staticmethod
     def process_args(name, namespace=None):
 
+        return locals(), None
+
+@elementclass
+class attribute_set(XslBase):
+    '''
+    >>> pp_elt(attribute_set('padding'))
+    <xsl:attribute-set name="padding"/>
+
+    >>> pp_elt(attribute_set('padding', 'wibble wobble'))
+    <xsl:attribute-set name="padding" use-attribute-sets="wibble wobble"/>
+
+    '''
+    @staticmethod
+    def process_args(name, use_attribute_sets=None):
         return locals(), None
 
 
