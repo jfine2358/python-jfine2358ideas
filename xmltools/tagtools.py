@@ -162,19 +162,29 @@ class wobble:
             raise ValueError
         return cls.process_args(**kwargs)
 
-    # TODO: tags in same collection to have same use_args.
-    def use_args(self, args):
+    @staticmethod
+    def filter_dict(arg_dict):
+        '''Return (valid, invalid) dicts from arg_dict.
+        '''
 
-        head = {}
-        errors = {}
-        for k, v in args.items():
+        valid = {}
+        invalid = {}
+        for k, v in arg_dict.items():
 
             if v is None:
                 pass
             elif v is REQUIRED:
-                errors[k] = v
+                invalid[k] = v
             else:
-                head[k] = v
+                valid[k] = v
+
+        return valid, invalid
+
+
+    # TODO: tags in same collection to have same use_args.
+    def use_args(self, args):
+
+        head, errors = self.filter_dict(args)
 
         if errors:
             msg = "missing keys: {0}"
