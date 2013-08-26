@@ -97,12 +97,13 @@ class tagtype(type):
 
 def tagfactory(bases, fn):
     '''Return tag with fn(**kwargs) as processor.
-    >>> def wibble(a=REQUIRED, b=2, c=None):
+
+    >>> deco = tagdecoratorfactory((wobble,))
+
+    >>> @deco
+    ... def wibble(a=REQUIRED, b=2, c=None):
     ...     'docstring'
     ...     return locals()
-
-    >>> wibble = tagfactory((wobble,), wibble)
-
 
     >>> a = wibble(a=1)
     >>> sorted(a.head.items())
@@ -124,6 +125,16 @@ def tagfactory(bases, fn):
     tag.__doc__ = fn.__doc__
 
     return tag
+
+
+def tagdecoratorfactory(bases, doc=None):
+
+    def deco(fn):
+        return tagfactory(bases, fn)
+
+    # TODO: Test __doc__
+    deco.__doc__ = doc
+    return deco
 
 
 class wobble:
