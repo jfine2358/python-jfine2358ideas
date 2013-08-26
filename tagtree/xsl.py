@@ -1,13 +1,16 @@
 '''Tags for xslt stylesheets
 
->>> print(apply_templates().xml_pp)
+>>> def doit(tag): print(tag.xml_pp)
+>>> doit(apply_templates())
 <xsl:apply-templates/>
 
 Use tag.xml_pp to get pretty-printed form of tag.
 
->>> print(apply_templates.xml_pp)
+>>> doit(apply_templates)
 <xsl:apply-templates/>
 
+>>> doit(apply_templates(select='the-selection', mode='the-mode'))
+<xsl:apply-templates mode="the-mode" select="the-selection"/>
 '''
 
 __metaclass__ = type
