@@ -42,7 +42,9 @@ class _TagBase:
     # TODO: is there a need for a metaclassmethod?
     @classmethod
     def make_args(cls, argv, kwargs):
-        # TODO: What about argv?
+
+        if argv:
+            raise ValueError
 
         return cls.process_args(**kwargs)
 
@@ -50,23 +52,7 @@ class _TagBase:
     # TODO: Migrate this, perhaps to basictag.
     def use_args(self, args):
 
-        head = {}
-        errors = {}
-        for k, v in args.items():
-
-            if v is None:
-                pass
-            elif v is REQUIRED:
-                errors[k] = v
-            else:
-                head[k] = v
-
-        if errors:
-            msg = "missing keys: {0}"
-            missing_keys = ','.join(errors)
-            raise ValueError(msg.format(missing_keys))
-
-        self.head = head
+        self.head = args
 
 
     # TODO: This is particular to the tag.
@@ -109,13 +95,13 @@ class tagtype(type):
         return self()[body]
 
 
-def basictag(bases, fn):
+def tagfactory(bases, fn):
     '''Return tag with fn(**kwargs) as processor.
     >>> def wibble(a=REQUIRED, b=2, c=None):
     ...     'docstring'
     ...     return locals()
 
-    >>> wibble = basictag((wobble,), wibble)
+    >>> wibble = tagfactory((wobble,), wibble)
 
 
     >>> a = wibble(a=1)
@@ -142,16 +128,15 @@ def basictag(bases, fn):
 
 class wobble:
 
-    # TODO: tags in same collection to have same make_args.
     # TODO: is there a need for a metaclassmethod?
     @classmethod
     def make_args(cls, argv, kwargs):
-        # TODO: What about argv?
 
+        if argv:
+            raise ValueError
         return cls.process_args(**kwargs)
 
     # TODO: tags in same collection to have same use_args.
-    # TODO: Migrate this, perhaps to basictag.
     def use_args(self, args):
 
         head = {}
@@ -171,13 +156,6 @@ class wobble:
             raise ValueError(msg.format(missing_keys))
 
         self.head = head
-
-
-    # TODO: This is particular to the tag.
-    @staticmethod
-    def process_args(**kwargs):
-
-        return kwargs
 
 
 
