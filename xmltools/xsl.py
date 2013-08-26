@@ -348,11 +348,31 @@ class decimal_format(XslBase):
 
         return locals(), None
 
+# TODO: element
+
+# TODO: for_each
+
+# TODO: if
+
+# TODO: import
+
+# TODO: include
+
+# TODO: key
+
+# TOOD: message
+
+# TODO: namespace_alias
+
+# TODO: number
+
 
 @elementclass
 class otherwise(XslBase, NoArgs):
     pass
 
+
+# TODO: output
 
 @elementclass
 class param(XslBase):
@@ -372,6 +392,14 @@ class param(XslBase):
 
         else:
             return locals(), None
+
+# TODO: preserve_space
+
+# TODO: processing_instruction
+
+# TODO: sort
+
+# TODO: strip_space
 
 
 @elementclass
@@ -492,6 +520,8 @@ class value_of(XslBase):
             return dict(name=name), select
         else:
             return locals(), None
+
+# TODO: variable
 
 @elementclass
 class when(XslBase):
