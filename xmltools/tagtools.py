@@ -34,11 +34,19 @@ class _TagBase:
                 msg = '{0}() does not take positional arguments ({1} given)'
                 raise TypeError(msg.format(name, len(argv) - 1))
 
-        # TODO: What about argv?
-        args = self.process_args(**kwargs)
+        args = self.make_args(argv, kwargs)
         self.use_args(args)
 
 
+    # TODO: tags in same collection to have same make_args.
+    # TODO: is there a need for a metaclassmethod?
+    @classmethod
+    def make_args(cls, argv, kwargs):
+        # TODO: What about argv?
+
+        return cls.process_args(**kwargs)
+
+    # TODO: tags in same collection to have same use_args.
     # TODO: Migrate this, perhaps to basictag.
     def use_args(self, args):
 
@@ -61,6 +69,7 @@ class _TagBase:
         self.head = head
 
 
+    # TODO: This is particular to the tag.
     @staticmethod
     def process_args(**kwargs):
 
