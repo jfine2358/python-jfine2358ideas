@@ -1,10 +1,11 @@
 '''Tags for xslt stylesheets
 
->>> print(apply_templates().pp_xml)
+>>> print(apply_templates().xml_pp)
 <xsl:apply-templates/>
 
-TODO: Is .xml_pp better - the xml pretty printed.
->>> print(apply_templates.pp_xml)
+Use tag.xml_pp to get pretty-printed form of tag.
+
+>>> print(apply_templates.xml_pp)
 <xsl:apply-templates/>
 
 '''
@@ -27,8 +28,8 @@ class xsltagtype(tagtype):
         return tag().xml
 
     @property
-    def pp_xml(tag):
-        return tag().pp_xml
+    def xml_pp(tag):
+        return tag().xml_pp
 
 
 class XslBase:
@@ -49,7 +50,9 @@ class XslBase:
         return '{{{0}}}{1}'.format(ns, name)
 
     @property
-    def pp_xml(self):
+    def xml_pp(self):
+        '''Return XML pretty print of a tag.
+        '''
 
         # Wrap self to suppress namespace.
         @xsltag
