@@ -12,9 +12,14 @@ Use tag.xml_pp to get pretty-printed form of tag.
 >>> doit(apply_templates(select='the-selection', mode='the-mode'))
 <xsl:apply-templates mode="the-mode" select="the-selection"/>
 
-TODO: translate under to hyphen.
+If present, a single trailing underscore is removed.
+>>> doit(if_(test='the-test'))
+<xsl:if test="the-test"/>
+
+
+Underscores are translated to hyphens.
 >>> doit(sort(data_type='number'))
-<xsl:sort data_type="number"/>
+<xsl:sort data-type="number"/>
 '''
 
 __metaclass__ = type
@@ -44,18 +49,55 @@ class XslBase:
 
     NAMESPACE = 'http://www.w3.org/1999/XSL/Transform'
 
-    @property
-    def xml_tag(self):
-        return
+    @staticmethod
+    def translate_name(name):
+        '''Return QName associated to Python name.
+
+        >>> doit = XslBase.translate_name
+        >>> doit('abc')
+        'abc'
+        >>> doit('if_')
+        'if'
+        >>> doit('ns__name')
+        'ns:name'
+
+        >>> doit('long_compound_name')
+        'long-compound-name'
+
+        >>> doit('ns__ns__name')
+        'ns:ns--name'
+        '''
+        # TODO: Translate first '
+
+        if name.endswith('_'):
+            name = name[:-1]
+
+        seq = name.split('__', 1)
+        if len(seq) == 2:
+            name = ':'.join(seq)
+
+        return name.replace('_', '-')
 
     @property
     def xml_tag(self):
 
         ns = self.NAMESPACE
         name = self.__class__.__name__
+        # Remove one trailing underscore, if present.
+        if name.endswith('_'):
+            name = name[:-1]
         # Replace underscore by hyphen.
         name = name.replace('_', '-')
         return '{{{0}}}{1}'.format(ns, name)
+
+    def make_attrib(self, args):
+
+        return dict(
+            (self.translate_name(name), unicode(value))
+            for name, value in self.head.items()
+            # TODO: Test suppress when value is None.
+            if value is not None
+            )
 
     @property
     def xml_pp(self):
