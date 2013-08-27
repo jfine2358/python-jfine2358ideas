@@ -15,8 +15,8 @@ def pp2(elt):
     print(lxml.etree.tostring(elt, pretty_print=True))
 
 
-htmltag = tagdecoratorfactory(tagtype, (wobble, simpletagbase))
-datatag = tagdecoratorfactory(tagtype, (wobble, simpletagbase))
+htmltag = tagdecoratorfactory(tagtype, (wobble,))
+datatag = tagdecoratorfactory(tagtype, (wobble,))
 
 
 # HTML elements.

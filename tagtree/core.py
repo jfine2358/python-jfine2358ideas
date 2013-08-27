@@ -16,7 +16,7 @@ True
 {'aaa': 1, 'bbb': 2}
 
 
->>> deco = tagdecoratorfactory(simpletagtype, (wobble, simpletagbase))
+>>> deco = tagdecoratorfactory(simpletagtype, (wobble,))
 
 >>> @deco
 ... def wibble(a=REQUIRED, b=2, c=OPTIONAL):
@@ -166,7 +166,7 @@ class simpletagtype(tagtype):
 
 simpletag = tagdecoratorfactory(simpletagtype, (simpletagbase,))
 
-class wobble:
+class wobble(simpletagbase):
 
     # TODO: is there a need for a metaclassmethod?
     @classmethod

@@ -26,7 +26,7 @@ class xsltagtype(tagtype):
         return tag().xml_pp
 
 
-class xsltagbase:
+class xsltagbase(wobble):
 
     NAMESPACE = 'http://www.w3.org/1999/XSL/Transform'
 
@@ -97,7 +97,7 @@ class xsltagbase:
         return s2
 
 
-xsltag = tagdecoratorfactory(xsltagtype, (xsltagbase, wobble, simpletagbase))
+xsltag = tagdecoratorfactory(xsltagtype, (xsltagbase,))
 
 
 
