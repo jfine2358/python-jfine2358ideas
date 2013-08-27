@@ -65,9 +65,9 @@ REQUIRED = object()             # Sentinel.
 
 # Naming convention
 # Type, BaseClass, Decorator
+# simpletagtype, simpletagbase, simpletag
 # htmltagtype, htmltagbase, htmltag
 # xsltagtype, xsltagbase, xsltag
-# tagtype, tagbase, tagaaaa (name?)
 
 class tagbase:
 
@@ -103,6 +103,9 @@ class tagbase:
         args = self.make_args(argv, kwargs)
         self.use_args(args)
 
+
+class simpletagbase(tagbase):
+
     # All tags of same type should have same make_args.  Provides
     # basic properties.
     @classmethod
@@ -129,7 +132,7 @@ class tagtype(type):
     # bases.
     def __new__(cls_type, name, bases, cls_dict):
 
-        bases = bases + (tagbase,)
+        bases = bases + (simpletagbase,)
         return type.__new__(cls_type, name, bases, cls_dict)
 
 
