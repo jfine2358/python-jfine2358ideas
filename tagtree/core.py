@@ -19,7 +19,7 @@ True
 >>> deco = tagdecoratorfactory(simpletagtype, (wobble,))
 
 >>> @deco
-... def wibble(a=REQUIRED, b=2, c=None):
+... def wibble(a=REQUIRED, b=2, c=OPTIONAL):
 ...     'docstring'
 ...     return locals()
 
@@ -188,7 +188,7 @@ class wobble:
         invalid = {}
         for k, v in arg_dict.items():
 
-            if v is None:
+            if v is OPTIONAL:
                 pass
             elif v is REQUIRED:
                 invalid[k] = v
@@ -222,8 +222,8 @@ class wobble:
         return dict(
             (name, unicode(value))
             for name, value in args.items()
-            # TODO: Test suppress when value is None.
-            if value is not None
+            # TODO: Test suppress when value is OPTIONAL.
+            if value is not OPTIONAL
             )
 
     @property
