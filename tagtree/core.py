@@ -169,13 +169,6 @@ simpletag = tagdecoratorfactory(simpletagtype, simpletagbase)
 
 class wobble(simpletagbase):
 
-    # TODO: is there a need for a metaclassmethod?
-    @classmethod
-    def make_args(cls, argv, kwargs):
-
-        if argv:
-            raise ValueError
-        return cls.process_args(**kwargs)
 
     @staticmethod
     def filter_dict(arg_dict):
