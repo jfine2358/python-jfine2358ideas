@@ -97,7 +97,8 @@ class xsltagbase(wobble):
         return s2
 
 
-xsltag = tagdecoratorfactory(xsltagtype, (xsltagbase,))
+# This is just what I want.  It's so simple.
+xsltag = tagdecoratorfactory(xsltagtype, xsltagbase)
 
 
 

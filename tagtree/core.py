@@ -16,7 +16,7 @@ True
 {'aaa': 1, 'bbb': 2}
 
 
->>> deco = tagdecoratorfactory(simpletagtype, (wobble,))
+>>> deco = tagdecoratorfactory(simpletagtype, wobble)
 
 >>> @deco
 ... def wibble(a=REQUIRED, b=2, c=OPTIONAL):
@@ -124,12 +124,12 @@ class tagbase:
         self.use_args(args)
 
 
-def tagdecoratorfactory(metaclass, bases, doc=None):
+def tagdecoratorfactory(metaclass, baseclass, doc=None):
 
     def deco(fn):
 
         process_args = staticmethod(fn)
-        tag = metaclass(fn.__name__, bases, dict(process_args = process_args))
+        tag = metaclass(fn.__name__, (baseclass,), dict(process_args = process_args))
         fn.__name__ = fn.__name__ + '__process_args'
         tag.__doc__ = fn.__doc__
 
@@ -164,7 +164,8 @@ class simpletagtype(tagtype):
     pass
 
 
-simpletag = tagdecoratorfactory(simpletagtype, (simpletagbase,))
+# This is just what I want.  It's so simple.
+simpletag = tagdecoratorfactory(simpletagtype, simpletagbase)
 
 class wobble(simpletagbase):
 
