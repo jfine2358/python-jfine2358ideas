@@ -122,6 +122,22 @@ class tagtype(type):
         return self()[body]
 
 
+def tagdecoratorfactory(metaclass, bases, doc=None):
+
+    def deco(fn):
+
+        process_args = staticmethod(fn)
+        tag = metaclass(fn.__name__, bases, dict(process_args = process_args))
+        fn.__name__ = fn.__name__ + '__process_args'
+        tag.__doc__ = fn.__doc__
+
+        return tag
+
+    # TODO: Test __doc__
+    deco.__doc__ = doc
+    return deco
+
+
 class simpletagbase(tagbase):
 
     # All tags of same type should have same make_args.  Provides
@@ -146,21 +162,7 @@ class simpletagtype(tagtype):
     pass
 
 
-def tagdecoratorfactory(metaclass, bases, doc=None):
-
-    def deco(fn):
-
-        process_args = staticmethod(fn)
-        tag = metaclass(fn.__name__, bases, dict(process_args = process_args))
-        fn.__name__ = fn.__name__ + '__process_args'
-        tag.__doc__ = fn.__doc__
-
-        return tag
-
-    # TODO: Test __doc__
-    deco.__doc__ = doc
-    return deco
-
+simpletag = tagdecoratorfactory(simpletagtype, (simpletagbase,))
 
 class wobble:
 
