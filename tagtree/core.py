@@ -36,9 +36,16 @@ Here is a tag with both head and body.
 ({'the': 'head'}, ['the body'])
 
 
-Here is a tag without either head or body.
-TODO: Finish
+Here is a tag without either head or body.  It's a little odd.
+>>> no_hb = tag
+>>> no_hb.head, no_hb.body
+({}, [])
 
+The no-head no-body instance of a tag is the tag itself.  It has empty
+head and body to provide a consistent interface.  For empty tags the
+head and body should be treated as read-only.
+
+TODO And in a future release they will be.
 
 >>> a = tag()
 >>> b = a[1, 2, 3]
@@ -114,6 +121,19 @@ class tagtype(type):
         '''Returns self()[body], to permit elt[...].
         '''
         return self()[body]
+
+    # TODO: Best would be to make head and body ordinary attributes,
+    # namely a read-only dictionary and list respectively.
+    # TODO: self not used, but don't see how to remove it.
+    @property
+    def head(self):
+        '''Treat as read-only.'''
+        return {}
+
+    @property
+    def body(self):
+        '''Treat as read-only.'''
+        return []
 
 
 class tagbase:
