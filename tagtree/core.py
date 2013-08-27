@@ -1,6 +1,9 @@
 '''Rewrite of core.py to make it simpler.
 
 >>> tag = simpletagtype('tag', (simpletagbase,), {})
+>>> @simpletag
+... def tag(**kwargs):
+...     return kwargs
 >>> a = tag(aaa=1, bbb=2)
 >>> b = a[1, 2, 3]
 >>> c = tag[1, 2, 3]
@@ -15,10 +18,7 @@ True
 >>> a.head
 {'aaa': 1, 'bbb': 2}
 
-
->>> deco = tagdecoratorfactory(simpletagtype, wobble)
-
->>> @deco
+>>> @complextag
 ... def wibble(a=REQUIRED, b=2, c=OPTIONAL):
 ...     'docstring'
 ...     return locals()
@@ -30,10 +30,10 @@ True
 >>> print(a.pp_xml[:-1])
 <wibble a="1" b="2"/>
 
->>> @deco
+>>> @complextag
 ... def td(): return{}
 
->>> @deco
+>>> @complextag
 ... def tr(): return{}
 
 >>> print(tr[td['aaa',], td['bbb',]].pp_xml[:-1])
@@ -123,7 +123,8 @@ class tagbase:
         args = self.make_args(argv, kwargs)
         self.use_args(args)
 
-
+# TODO: Rename to tagdecorator?
+# TOOD: Allow baseclass to be class or tuple of classes.
 def tagdecoratorfactory(metaclass, baseclass, doc=None):
 
     def deco(fn):
@@ -150,14 +151,14 @@ class simpletagbase(tagbase):
             raise ValueError
         return cls.process_args(**kwargs)
 
+    # All tags of the same type should have the same use_args.
+    def use_args(self, args):
+        self.head = args
+
     # Usually, the processing of arguments will differ.
     @staticmethod
     def process_args(**kwargs):
         return kwargs
-
-    # All tags of the same type should have the same use_args.
-    def use_args(self, args):
-        self.head = args
 
 
 class simpletagtype(tagtype):
@@ -167,7 +168,7 @@ class simpletagtype(tagtype):
 # This is just what I want.  It's so simple.
 simpletag = tagdecoratorfactory(simpletagtype, simpletagbase)
 
-class wobble(simpletagbase):
+class complextagbase(simpletagbase):
 
 
     @staticmethod
@@ -248,6 +249,7 @@ class wobble(simpletagbase):
         s = lxml.etree.tostring(self.xml, pretty_print=True)
         return s
 
+complextag = tagdecoratorfactory(simpletagtype, complextagbase)
 
 if __name__ == '__main__':
 

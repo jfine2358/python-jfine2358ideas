@@ -9,7 +9,8 @@ from .core import OPTIONAL
 from .core import REQUIRED
 from .core import tagtype
 from .core import tagdecoratorfactory
-from .core import wobble        # TODO: rename, refactor.
+from .core import complextag
+from .core import complextagbase
 from .core import simpletagbase
 
 
@@ -26,7 +27,7 @@ class xsltagtype(tagtype):
         return tag().xml_pp
 
 
-class xsltagbase(wobble):
+class xsltagbase(complextagbase):
 
     NAMESPACE = 'http://www.w3.org/1999/XSL/Transform'
 

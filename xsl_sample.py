@@ -1,9 +1,6 @@
 import lxml.etree
 from tagtree.xsl_tags import *
-from tagtree.core import tagdecoratorfactory
-from tagtree.core import wobble
-from tagtree.core import tagtype
-from tagtree.core import simpletagbase
+from tagtree.core import complextag
 
 __metaclass__ = type
 
@@ -15,8 +12,8 @@ def pp2(elt):
     print(lxml.etree.tostring(elt, pretty_print=True))
 
 
-htmltag = tagdecoratorfactory(tagtype, wobble)
-datatag = tagdecoratorfactory(tagtype, wobble)
+htmltag = complextag
+datatag = complextag
 
 
 # HTML elements.
