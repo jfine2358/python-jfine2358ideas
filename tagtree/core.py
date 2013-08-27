@@ -1,10 +1,46 @@
-'''Rewrite of core.py to make it simpler.
+'''Core code for tag trees
 
->>> tag = simpletagtype('tag', (simpletagbase,), {})
+A tag tree is a particular sort of tree.  More abstractly, it is a
+notation for specifying such a tree.  The non-data nodes of the tree
+are called tags.  Tags are organised into families, such as HTML, SVG
+and XSL.  All the tags in a family have a lot in common.  They differ only
+in the way that they process the tag arguments.
+
+Every tag has a head and a body.  (This is a small white lie.) The
+body is a possibly empty list.  The head stores tag attributes as in
+XML, or something similar.  The tag arguments determine the head, and
+can sometimes also contribute to the body.
+
+The argument processing interface depends on the tag family. Simple
+tags have only keyword arguments, and are created using the simpletag
+decorator.
+
 >>> @simpletag
 ... def tag(**kwargs):
 ...     return kwargs
->>> a = tag(aaa=1, bbb=2)
+
+Here is a tag with an empty head and a body.
+>>> bo = tag['the', 'body']
+>>> bo.head, bo.body
+({}, ['the', 'body'])
+
+
+Here is a tag with a head and an empty body.
+>>> ho = tag(the='head')
+>>> ho.head, ho.body
+({'the': 'head'}, [])
+
+Here is a tag with both head and body.
+>>> hb = tag(the='head')['the body']
+>>> hb.head, hb.body
+({'the': 'head'}, ['the body'])
+
+
+Here is a tag without either head or body.
+TODO: Finish
+
+
+>>> a = tag()
 >>> b = a[1, 2, 3]
 >>> c = tag[1, 2, 3]
 >>> tag == type(a) == type(b) == type(c)
@@ -14,9 +50,6 @@ True
 
 >>> type(tag) == simpletagtype
 True
-
->>> a.head
-{'aaa': 1, 'bbb': 2}
 
 >>> @complextag
 ... def wibble(a=REQUIRED, b=2, c=OPTIONAL):
@@ -56,12 +89,6 @@ True
 import lxml.etree
 
 __metaclass__ = type
-
-# DONE: Able to create classes and instances.
-# DONE: Able to mutate instances.
-
-OPTIONAL = object()             # Sentinel.
-REQUIRED = object()             # Sentinel.
 
 # Naming convention
 # Type, BaseClass, Decorator
@@ -167,6 +194,11 @@ class simpletagtype(tagtype):
 
 # This is just what I want.  It's so simple.
 simpletag = tagdecoratorfactory(simpletagtype, simpletagbase)
+
+######################################################################
+
+OPTIONAL = object()             # Sentinel.
+REQUIRED = object()             # Sentinel.
 
 class complextagbase(simpletagbase):
 
