@@ -47,6 +47,17 @@ head and body should be treated as read-only.
 
 TODO And in a future release they will be.
 
+TODO: Simple tag with positional arguments.
+
+TOOD: Simple tag with restricted range of arguments.
+
+TODO: Simple tag with default values.
+
+TODO: Simple tag with optional values (but no default).
+
+TODO: Maybe remove REQUIRED, OPTIONAL.
+
+This shows the types.
 >>> a = tag()
 >>> b = a[1, 2, 3]
 >>> c = tag[1, 2, 3]
@@ -57,6 +68,13 @@ True
 
 >>> type(tag) == simpletagtype
 True
+
+The complextag has different processing.  Give tag type control over
+error handling.  Useful for low-level mapping of tags to XML schema,
+and thus for XML generation.
+
+TODO: Rename to xmltag and require that values be strings.  Also
+provide namespace support.
 
 >>> @complextag
 ... def wibble(a=REQUIRED, b=2, c=OPTIONAL):
@@ -103,20 +121,22 @@ __metaclass__ = type
 # htmltagtype, htmltagbase, htmltag
 # xsltagtype, xsltagbase, xsltag
 
+# TODO: rename simpletag to basictag (or valuetag?).
+# TODO: rename complextag to xmltag.
+# TODO: provide element('name', attribute='value').
+# TODO: provide element('name', namespace, attribute='value').
 
 class tagtype(type):
+    '''Base type (not class) for all tags.
+
+    Provides exactly the methods shared by all no-head no-body tags.
+
+    * tag[node] calls and return tag()[body].
+    * tag.head property gives empty dict - treat as read-only.
+    * tag.body property gives empty list - treat as read-only.
+
+    Subclass tagtype to provide additional methods on a tag family.
     '''
-    '''
-
-    # TODO: Explain why this is redundant.
-    # TODO: Explain how I can to write it in the first place.
-    # # TODO: This is a basic class modifier - manipulate type and
-    # # bases.
-    # def __new__(cls_type, name, bases, cls_dict):
-
-    #     return type.__new__(cls_type, name, bases, cls_dict)
-
-
     def __getitem__(self, body):
         '''Returns self()[body], to permit elt[...].
         '''
@@ -137,6 +157,39 @@ class tagtype(type):
 
 
 class tagbase:
+    '''Base class for all tags.
+
+    Every tag inherits from tagbase, which provide __init__ and
+    __getitem__.  Subclasses should supply
+
+    * a static function args = make_args(argv, kwargs)
+    * an instance method self.use_args(args)
+
+    All tags in the same family should share the same conventions
+    regarding the nature of args.
+
+    There should be no need, except for logging and the like, for a
+    tag provide it's own __init__ and __getitem__ methods.
+
+    TODO: Abstract Base Class? New in 2.6.
+    '''
+
+    def __init__(*argv, **kwargs):
+
+        # Remove self from argv.
+        self = argv[0]          # In trouble if this fails.
+        argv = argv[1:]
+
+        self.head = {}          # Start as dict, to be updated.
+        self.body = []          # Start as list, to be extended.
+        # TODO: Rename to allow_getitem.
+        self.got_item = False   # Don't allow tag()[node][node].
+
+        # First make_args, and then use_args.
+        # TODO: Move make_args to the tagtype?
+        args = self.make_args(argv, kwargs)
+        self.use_args(args)
+
 
     def __getitem__(self, body):
         '''Return self, mutated by self.body.extend(body).
@@ -155,20 +208,6 @@ class tagbase:
         self.got_item = True
         return self
 
-    def __init__(*argv, **kwargs):
-
-        # Remove self from argv.
-        self = argv[0]          # In trouble if this fails.
-        argv = argv[1:]
-
-        self.head = None
-        self.body = []          # Start as list, to be extended.
-        self.got_item = False   # Don't allow tag()[node][node].
-
-        # First make_args, and then use_args.
-        # TODO: Move make_args to the tagtype?
-        args = self.make_args(argv, kwargs)
-        self.use_args(args)
 
 # TODO: Rename to tagdecorator?
 # TOOD: Allow baseclass to be class or tuple of classes.
