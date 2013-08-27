@@ -146,23 +146,16 @@ class simpletagtype(tagtype):
     pass
 
 
-def tagfactory(metaclass, bases, fn):
-    '''Return tag with fn(**kwargs) as processor.
-'
-    '''
-    # TODO: doctest fn.__name__.
-    process_args = staticmethod(fn)
-    tag = metaclass(fn.__name__, bases, dict(process_args = process_args))
-    fn.__name__ = fn.__name__ + '__process_args'
-    tag.__doc__ = fn.__doc__
-
-    return tag
-
-
-def tagdecoratorfactory(tagtype, bases, doc=None):
+def tagdecoratorfactory(metaclass, bases, doc=None):
 
     def deco(fn):
-        return tagfactory(tagtype, bases, fn)
+
+        process_args = staticmethod(fn)
+        tag = metaclass(fn.__name__, bases, dict(process_args = process_args))
+        fn.__name__ = fn.__name__ + '__process_args'
+        tag.__doc__ = fn.__doc__
+
+        return tag
 
     # TODO: Test __doc__
     deco.__doc__ = doc
