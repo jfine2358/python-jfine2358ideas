@@ -1,7 +1,8 @@
 import lxml.etree
-from tagtree.xsl import *
+from tagtree.xsl_tags import *
 from tagtree.core import tagdecoratorfactory
 from tagtree.core import wobble
+from tagtree.core import tagtype
 
 __metaclass__ = type
 

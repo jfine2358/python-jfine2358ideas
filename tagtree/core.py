@@ -60,6 +60,7 @@ __metaclass__ = type
 # DONE: Able to create classes and instances.
 # DONE: Able to mutate instances.
 
+OPTIONAL = object()             # Sentinel.
 REQUIRED = object()             # Sentinel.
 
 # Naming convention
