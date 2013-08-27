@@ -72,13 +72,20 @@ REQUIRED = object()             # Sentinel.
 class tagbase:
 
     def __getitem__(self, body):
-        '''Return self, mutated by self.body = body.'''
+        '''Return self, mutated by self.body.extend(body).
 
-        # TODO: Provide tests, explain.
+        We treat tag()[node] as tag()[node,]. This fails if item is
+        already a tuple, which is a markup abuse, except possibly when
+        item is the empty tuple.
+        '''
+        if self.got_item:
+            raise ValueError('tag[node][node] error')
+
         if type(body) != tuple:
             body = (body,)
 
-        self.body = body
+        self.body.extend(body)
+        self.got_item = True
         return self
 
     def __init__(*argv, **kwargs):
@@ -86,6 +93,10 @@ class tagbase:
         # Remove self from argv.
         self = argv[0]          # In trouble if this fails.
         argv = argv[1:]
+
+        self.head = None
+        self.body = []          # Start as list, to be extended.
+        self.got_item = False   # Don't allow tag()[node][node].
 
         # First make_args, and then use_args.
         # TODO: Move make_args to the tagtype?
@@ -191,7 +202,7 @@ class wobble:
             raise ValueError(msg.format(missing_keys))
 
         self.head = head
-        self.body = None
+        # self.body is a list which can be extended.
 
     @property
     def xml_tag(self):
