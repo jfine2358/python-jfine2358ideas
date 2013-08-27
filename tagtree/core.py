@@ -1,6 +1,6 @@
 '''Rewrite of core.py to make it simpler.
 
->>> tag = tagtype('tag', (), {})
+>>> tag = simpletagtype('tag', (), {})
 >>> a = tag(aaa=1, bbb=2)
 >>> b = a[1, 2, 3]
 >>> c = tag[1, 2, 3]
@@ -9,14 +9,14 @@ True
 >>> a == b
 True
 
->>> type(tag) == tagtype
+>>> type(tag) == simpletagtype
 True
 
 >>> a.head
 {'aaa': 1, 'bbb': 2}
 
 
->>> deco = tagdecoratorfactory(tagtype, (wobble,))
+>>> deco = tagdecoratorfactory(simpletagtype, (wobble,))
 
 >>> @deco
 ... def wibble(a=REQUIRED, b=2, c=None):
@@ -46,7 +46,7 @@ True
 Traceback (most recent call last):
 ValueError: missing keys: a
 
->>> type(wibble) == tagtype
+>>> type(wibble) == simpletagtype
 True
 >>> wibble.__doc__
 'docstring'
@@ -104,6 +104,24 @@ class tagbase:
         self.use_args(args)
 
 
+class tagtype(type):
+    '''
+    '''
+
+    # TODO: This is a basic class modifier - manipulate type and
+    # bases.
+    def __new__(cls_type, name, bases, cls_dict):
+
+        bases = bases + (simpletagbase,)
+        return type.__new__(cls_type, name, bases, cls_dict)
+
+
+    def __getitem__(self, body):
+        '''Returns self()[body], to permit elt[...].
+        '''
+        return self()[body]
+
+
 class simpletagbase(tagbase):
 
     # All tags of same type should have same make_args.  Provides
@@ -124,22 +142,8 @@ class simpletagbase(tagbase):
         self.head = args
 
 
-class tagtype(type):
-    '''
-    '''
-
-    # TODO: This is a basic class modifier - manipulate type and
-    # bases.
-    def __new__(cls_type, name, bases, cls_dict):
-
-        bases = bases + (simpletagbase,)
-        return type.__new__(cls_type, name, bases, cls_dict)
-
-
-    def __getitem__(self, body):
-        '''Returns self()[body], to permit elt[...].
-        '''
-        return self()[body]
+class simpletagtype(tagtype):
+    pass
 
 
 def tagfactory(metaclass, bases, fn):
