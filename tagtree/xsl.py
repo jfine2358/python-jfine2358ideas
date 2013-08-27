@@ -29,6 +29,8 @@ class xsltagtype(tagtype):
 
 class xsltagbase(complextagbase):
 
+    metaclass = xsltagtype
+
     NAMESPACE = 'http://www.w3.org/1999/XSL/Transform'
 
     @staticmethod
@@ -99,7 +101,7 @@ class xsltagbase(complextagbase):
 
 
 # This is just what I want.  It's so simple.
-xsltag = tagdecoratorfactory(xsltagtype, xsltagbase)
+xsltag = tagdecoratorfactory(xsltagbase)
 
 
 

@@ -174,6 +174,8 @@ class tagbase:
     TODO: Abstract Base Class? New in 2.6.
     '''
 
+    metaclass = tagtype
+
     def __init__(*argv, **kwargs):
 
         # Remove self from argv.
@@ -211,9 +213,11 @@ class tagbase:
 
 # TODO: Rename to tagdecorator?
 # TOOD: Allow baseclass to be class or tuple of classes.
-def tagdecoratorfactory(metaclass, baseclass, doc=None):
+def tagdecoratorfactory(baseclass, doc=None):
 
     def deco(fn):
+
+        metaclass = baseclass.metaclass
 
         process_args = staticmethod(fn)
         tag = metaclass(fn.__name__, (baseclass,), dict(process_args = process_args))
@@ -227,7 +231,11 @@ def tagdecoratorfactory(metaclass, baseclass, doc=None):
     return deco
 
 
+simpletagtype = tagtype
+
 class simpletagbase(tagbase):
+
+    metaclass = tagtype
 
     # All tags of same type should have same make_args.  Provides
     # basic properties.
@@ -247,12 +255,9 @@ class simpletagbase(tagbase):
         return kwargs
 
 
-class simpletagtype(tagtype):
-    pass
-
 
 # This is just what I want.  It's so simple.
-simpletag = tagdecoratorfactory(simpletagtype, simpletagbase)
+simpletag = tagdecoratorfactory(simpletagbase)
 
 ######################################################################
 
@@ -340,7 +345,7 @@ class complextagbase(simpletagbase):
         s = lxml.etree.tostring(self.xml, pretty_print=True)
         return s
 
-complextag = tagdecoratorfactory(simpletagtype, complextagbase)
+complextag = tagdecoratorfactory(complextagbase)
 
 if __name__ == '__main__':
 
