@@ -69,6 +69,26 @@ REQUIRED = object()             # Sentinel.
 # htmltagtype, htmltagbase, htmltag
 # xsltagtype, xsltagbase, xsltag
 
+
+class tagtype(type):
+    '''
+    '''
+
+    # TODO: Explain why this is redundant.
+    # TODO: Explain how I can to write it in the first place.
+    # # TODO: This is a basic class modifier - manipulate type and
+    # # bases.
+    # def __new__(cls_type, name, bases, cls_dict):
+
+    #     return type.__new__(cls_type, name, bases, cls_dict)
+
+
+    def __getitem__(self, body):
+        '''Returns self()[body], to permit elt[...].
+        '''
+        return self()[body]
+
+
 class tagbase:
 
     def __getitem__(self, body):
@@ -102,25 +122,6 @@ class tagbase:
         # TODO: Move make_args to the tagtype?
         args = self.make_args(argv, kwargs)
         self.use_args(args)
-
-
-class tagtype(type):
-    '''
-    '''
-
-    # TODO: Explain why this is redundant.
-    # TODO: Explain how I can to write it in the first place.
-    # # TODO: This is a basic class modifier - manipulate type and
-    # # bases.
-    # def __new__(cls_type, name, bases, cls_dict):
-
-    #     return type.__new__(cls_type, name, bases, cls_dict)
-
-
-    def __getitem__(self, body):
-        '''Returns self()[body], to permit elt[...].
-        '''
-        return self()[body]
 
 
 def tagdecoratorfactory(metaclass, bases, doc=None):
