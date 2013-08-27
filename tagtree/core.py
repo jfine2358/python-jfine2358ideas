@@ -1,6 +1,6 @@
 '''Rewrite of core.py to make it simpler.
 
->>> tag = simpletagtype('tag', (), {})
+>>> tag = simpletagtype('tag', (simpletagbase,), {})
 >>> a = tag(aaa=1, bbb=2)
 >>> b = a[1, 2, 3]
 >>> c = tag[1, 2, 3]
@@ -16,7 +16,7 @@ True
 {'aaa': 1, 'bbb': 2}
 
 
->>> deco = tagdecoratorfactory(simpletagtype, (wobble,))
+>>> deco = tagdecoratorfactory(simpletagtype, (wobble, simpletagbase))
 
 >>> @deco
 ... def wibble(a=REQUIRED, b=2, c=OPTIONAL):
@@ -108,12 +108,13 @@ class tagtype(type):
     '''
     '''
 
-    # TODO: This is a basic class modifier - manipulate type and
-    # bases.
-    def __new__(cls_type, name, bases, cls_dict):
+    # TODO: Explain why this is redundant.
+    # TODO: Explain how I can to write it in the first place.
+    # # TODO: This is a basic class modifier - manipulate type and
+    # # bases.
+    # def __new__(cls_type, name, bases, cls_dict):
 
-        bases = bases + (simpletagbase,)
-        return type.__new__(cls_type, name, bases, cls_dict)
+    #     return type.__new__(cls_type, name, bases, cls_dict)
 
 
     def __getitem__(self, body):

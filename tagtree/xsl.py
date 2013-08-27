@@ -10,6 +10,7 @@ from .core import REQUIRED
 from .core import tagtype
 from .core import tagdecoratorfactory
 from .core import wobble        # TODO: rename, refactor.
+from .core import simpletagbase
 
 
 class xsltagtype(tagtype):
@@ -96,7 +97,7 @@ class xsltagbase:
         return s2
 
 
-xsltag = tagdecoratorfactory(xsltagtype, (xsltagbase, wobble))
+xsltag = tagdecoratorfactory(xsltagtype, (xsltagbase, wobble, simpletagbase))
 
 
 
