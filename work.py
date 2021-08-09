@@ -131,4 +131,4 @@ page = html[
     pear_div[p, p],
 ]
 
-print(lxml.etree.tostring(page.toxml(), pretty_print=True))
+print(lxml.etree.tostring(page.toxml(), pretty_print=True).decode())

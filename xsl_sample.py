@@ -6,10 +6,10 @@ __metaclass__ = type
 
 
 def ppp(elt):
-    print(lxml.etree.tostring(elt.xml, pretty_print=True))
+    return lxml.etree.tostring(elt.xml, pretty_print=True)
 
 def pp2(elt):
-    print(lxml.etree.tostring(elt, pretty_print=True))
+    return lxml.etree.tostring(elt, pretty_print=True)
 
 
 htmltag = complextag
@@ -119,11 +119,10 @@ my_xsl = stylesheet[
 if __name__ == '__main__':
 
     # Run everything.
-    ppp(data)
-    ppp(my_xsl)
-
     fn = lxml.etree.XSLT(my_xsl.xml)
     result = fn(data.xml, profile_run=True)
 
-    pp2(result)
-    pp2(result.xslt_profile)
+    print(data.pp_xml.decode())
+    print(my_xsl.pp_xml.decode())
+    print(result)
+    print(pp2(result.xslt_profile).decode())
