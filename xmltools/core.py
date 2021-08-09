@@ -92,6 +92,14 @@ mapping could also add namespaces.
 '<ddd keep-alive="true"/>'
 '''
 
+# For Python3 compatibility.
+try:
+    unicode
+except NameError:
+    def unicode(arg):
+        return arg
+
+
 import lxml.etree
 
 __metaclass__ = type
